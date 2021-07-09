@@ -1,0 +1,74 @@
+# GitHub Action Workflow enforcing our code style.
+
+name: Lint, Build & Deploy
+
+# Trigger the workflow on both push (to the main repository)
+# and pull requests (against the main repository, but from any repo).
+on: [push, pull_request]
+# Brand new concurrency setting! This ensures that not more than one run can be triggered for the same commit.
+# It is useful for pull requests coming from the main repository since both triggers will match.
+concurrency: lint-${{ github.sha }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    env:
+      # Set an environment variable to select pip's cache directory for us to actually cache between runs.
+      PIP_CACHE_DIR: /tmp/pip-cache-dir
+      # The Python version your project uses. Feel free to change this if required.
+      PYTHON_VERSION: 3.9
+
+    steps:
+      # Checks out the repository in the current folder.
+      - name: Checks out repository
+        uses: actions/checkout@v2
+
+      # Set up the right version of Python
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        id: python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # This step caches our Python dependencies. To make sure we
+      # only restore a cache when the dependencies, the python version and
+      # the runner operating system we create a cache key
+      # that is a composite of those states.
+      # Only when the context is exactly the same, we will restore the cache.
+      - name: Restore pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PIP_CACHE_DIR }}
+          key: "python-pip-${{ runner.os }}-\
+          ${{ steps.python.outputs.python-version }}-\
+          ${{ hashFiles('./Pipfile', './Pipfile.lock') }}"
+
+      # Uncomment the step that matches your setup.
+
+      # Default Env setup
+      - name: Run hooks through our requirement file
+        run: |
+          pip install -r dev-requirements.txt
+          pre-commit run --all-files
+        env:
+          # Force pre-commit to do a system install.
+          PIP_USER: 0
+
+        # Pipenv setup
+        # - name: Run hooks through our Pipenv environment.
+        #  run: |
+        #    pipenv install --system --dev
+        #    pipenv run python -m pre-commit run --all-files
+        #  env:
+        #    # Force pre-commit to do a system install.
+        #    PIP_USER: 0
+
+        # Poetry setup
+        # - name: Run hooks through our Poetry environment.
+        #  run: |
+        #    poetry install
+        #    poetry run python -m pre-commit run --all-files
+        #  env:
+        #    # Force pre-commit to do a system install.
+        #    PIP_USER: 0

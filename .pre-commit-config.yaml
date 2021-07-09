@@ -1,0 +1,36 @@
+## Pre-commit setup
+# See https://github.com/python-discord/code-jam-template/tree/main#pre-commit-run-linting-before-committing
+#
+# Please uncomment the right lines depending on your setup.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.5.0
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.5.1
+    hooks:
+      - id: python-check-blanket-noqa
+  - repo: local
+    hooks:
+      - id: isort
+        name: ISort
+        entry: python -m isort .  # Default Env setup
+        # entry: pipenv run python -m isort .  # Pipenv setup
+        # entry: poetry run python -m isort .  # Poetry setup
+        language: system
+        types: [python]
+        require_serial: true
+      - id: flake8
+        name: Flake8
+        entry: python -m flake8  # Default Env setup
+        # entry: pipenv run python -m flake8  # Pipenv setup
+        # entry: poetry run python -m flake8  # Poetry setup
+        language: system
+        types: [python]
+        require_serial: true
