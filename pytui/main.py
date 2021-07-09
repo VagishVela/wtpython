@@ -1,7 +1,7 @@
 import sys
 
 from parsers.python import PythonParser
-from backends.stackoverflow import StackOverFlowFinder
+from backends.stackoverflow import StackOverflowFinder
 from display import Display
 
 
