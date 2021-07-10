@@ -10,6 +10,7 @@ classifiers = [ "License :: OSI Approved :: MIT License",]
 description-file = "README.md"
 requires-python=">=3.9"
 requires=[
+    "parse == 1.19.0",
     "requests == 2.25.1",
     "textual == 0.1.5",
     "rich == 10.5.0",
