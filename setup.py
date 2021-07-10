@@ -1,4 +1,3 @@
-import os
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -8,7 +7,7 @@ setuptools.setup(
     name='pytui',
     version='0.0.1',
     entry_points={
-    'console_scripts': [
+        'console_scripts': [
             'pytui = pytui.main:main',
         ],
     },
