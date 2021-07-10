@@ -6,7 +6,7 @@ from rich import print
 
 
 def parse_err(txt: str) -> tuple:
-    """Extract error message and packages invloved in stack trace.
+    """Extract error message and packages involved in stack trace.
 
     The specific error message is assumed to be the last line that is not indented.
     """
