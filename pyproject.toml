@@ -1,0 +1,42 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "pytui"
+author = "Perceptive Porcupines"
+author-email = "email@example.com"
+classifiers = [ "License :: OSI Approved :: MIT License",]
+description-file = "README.md"
+requires-python=">=3.9"
+requires=[
+    "requests == 2.25.1",
+    "textual == 0.1.5",
+    "rich == 10.5.0",
+    "typer == 0.3.2",
+]
+
+[tool.flit.metadata.requires-extra]
+test = [
+    "flake8~=3.7",
+    "flake8-annotations~=2.0",
+    "flake8-bandit~=2.1",
+    "flake8-docstrings~=1.5",
+    "flake8-isort~=4.0",
+    "isort~=5.9",
+    "pytest >= 6.2.4",
+    "pytest-cov >= 2.12.1",
+    "pytest-randomly >= 3.8.0",
+]
+dev = [
+    "pre-commit >= 2.13.0",
+]
+
+[tool.flit.scripts]
+pytui = "pytui.main:main"
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
