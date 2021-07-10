@@ -31,44 +31,5 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      # This step caches our Python dependencies. To make sure we
-      # only restore a cache when the dependencies, the python version and
-      # the runner operating system we create a cache key
-      # that is a composite of those states.
-      # Only when the context is exactly the same, we will restore the cache.
-      - name: Restore pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.PIP_CACHE_DIR }}
-          key: "python-pip-${{ runner.os }}-\
-          ${{ steps.python.outputs.python-version }}-\
-          ${{ hashFiles('./Pipfile', './Pipfile.lock') }}"
-
-      # Uncomment the step that matches your setup.
-
-      # Default Env setup
-      - name: Run hooks through our requirement file
-        run: |
-          pip install -r dev-requirements.txt
-          pre-commit run --all-files
-        env:
-          # Force pre-commit to do a system install.
-          PIP_USER: 0
-
-        # Pipenv setup
-        # - name: Run hooks through our Pipenv environment.
-        #  run: |
-        #    pipenv install --system --dev
-        #    pipenv run python -m pre-commit run --all-files
-        #  env:
-        #    # Force pre-commit to do a system install.
-        #    PIP_USER: 0
-
-        # Poetry setup
-        # - name: Run hooks through our Poetry environment.
-        #  run: |
-        #    poetry install
-        #    poetry run python -m pre-commit run --all-files
-        #  env:
-        #    # Force pre-commit to do a system install.
-        #    PIP_USER: 0
+      - name: Run pre-commit hooks.
+        uses: pre-commit/action@v2.0.3

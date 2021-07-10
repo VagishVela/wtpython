@@ -1,7 +1,7 @@
 ## Pre-commit setup
 # See https://github.com/python-discord/code-jam-template/tree/main#pre-commit-run-linting-before-committing
-#
-# Please uncomment the right lines depending on your setup.
+
+# Make sure to edit the `additional_dependencies` list if you want to add plugins
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -12,25 +12,23 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
+
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.5.1
     hooks:
       - id: python-check-blanket-noqa
-  - repo: local
+
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.9.2
     hooks:
       - id: isort
-        name: ISort
-        entry: python -m isort .  # Default Env setup
-        # entry: pipenv run python -m isort .  # Pipenv setup
-        # entry: poetry run python -m isort .  # Poetry setup
-        language: system
-        types: [python]
-        require_serial: true
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
       - id: flake8
-        name: Flake8
-        entry: python -m flake8  # Default Env setup
-        # entry: pipenv run python -m flake8  # Pipenv setup
-        # entry: poetry run python -m flake8  # Poetry setup
-        language: system
-        types: [python]
-        require_serial: true
+        additional_dependencies:
+          - flake8-annotations~=2.0
+          - flake8-bandit~=2.1
+          - flake8-docstrings~=1.5
+          - flake8-isort~=4.0
