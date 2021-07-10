@@ -1,3 +1,4 @@
+from pytui.display.display import Display
 import subprocess  # noqa: S404
 import sys
 
@@ -40,8 +41,11 @@ def main() -> None:
 
     if result.stderr:
         error_msg, packages = parse_err(result.stderr.decode('utf-8'))
-        print(f"[red bold]Error Message:[/] {error_msg}")
-        print(f"[blue bold]Packages:[/] {', '.join(packages)}")
+        error_message = f"[red bold]Error Message:[/] {error_msg}"
+        error_message += f"[blue bold]Packages:[/] {', '.join(packages)}"
+    
+    display = Display(title="Simple App")
+    display.run()
 
 
 if __name__ == "__main__":
