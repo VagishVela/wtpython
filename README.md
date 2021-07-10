@@ -1,6 +1,6 @@
 # PyTUI
 
-Helping you find answers to the errrors Python spits out.
+Helping you find answers to the errors Python spits out.
 
 ## Development Tools
 
