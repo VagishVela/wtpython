@@ -1,9 +1,9 @@
-from pytui.display.display import Display
 import subprocess  # noqa: S404
 import sys
 
 from parse import findall
-from rich import print
+
+from pytui.display.display import Display
 
 
 def parse_err(txt: str) -> tuple:
@@ -43,7 +43,7 @@ def main() -> None:
         error_msg, packages = parse_err(result.stderr.decode('utf-8'))
         error_message = f"[red bold]Error Message:[/] {error_msg}"
         error_message += f"[blue bold]Packages:[/] {', '.join(packages)}"
-    
+
     display = Display(title="Simple App")
     display.run()
 
