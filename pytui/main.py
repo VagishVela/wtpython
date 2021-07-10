@@ -36,7 +36,7 @@ def main() -> None:
     """Run the application"""
     args = sys.argv
     args[0] = 'python'  # Replace pytui with 'python' to act as a runner
-    result = subprocess.call(args, stderr=subprocess.PIPE, shell=False)  # noqa: S603
+    result = subprocess.run(args, stderr=subprocess.PIPE, shell=False)  # noqa: S603
 
     if result.stderr:
         error_msg, packages = parse_err(result.stderr.decode('utf-8'))
