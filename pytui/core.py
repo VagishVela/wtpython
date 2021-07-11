@@ -1,5 +1,7 @@
 import subprocess  # noqa: S404
 
+import pyperclip
+
 from pytui.arguments import args
 from pytui.backends.stackoverflow import StackOverflowFinder
 from pytui.parser import parse_error
@@ -27,6 +29,10 @@ def get_all_error_results(max_results: int = 10) -> dict:
     """
     all_text = run_and_get_stderr()
     error, packages = parse_error(all_text)
+
+    # Copy the error to the clipboard if asked
+    if args['copy_error']:
+        pyperclip.copy(error)
 
     stack_overflow = StackOverflowFinder()
     error_answers = stack_overflow.search(error, max_results)  # noqa: F841
