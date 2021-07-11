@@ -4,7 +4,7 @@ from textual.view import DockView
 from textual.widgets import Footer, Header, Placeholder, ScrollView
 
 from pytui.backends.stackoverflow import StackOverflowFinder
-from pytui.parsers.parse_errors import run_and_get_errors
+from pytui.parse_errors import run_and_get_errors
 
 
 class Display(App):
