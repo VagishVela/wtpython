@@ -17,6 +17,7 @@ requires=[
     "typer == 0.3.2",
     "pyperclip == 1.8.2",
     "requests-cache == 0.7.1",
+    "html2text == 2020.1.16",
 ]
 
 [tool.flit.metadata.requires-extra]
