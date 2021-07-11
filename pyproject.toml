@@ -16,6 +16,7 @@ requires=[
     "rich == 10.5.0",
     "typer == 0.3.2",
     "pyperclip == 1.8.2",
+    "requests-cache == 0.7.1",
 ]
 
 [tool.flit.metadata.requires-extra]
