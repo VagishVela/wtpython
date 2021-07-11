@@ -1,5 +1,7 @@
 import sys
 
+from rich import print
+
 from pytui.core import get_all_error_results
 from pytui.display import Display
 
