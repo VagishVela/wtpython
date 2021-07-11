@@ -67,7 +67,6 @@ class StackOverflowFinder:
                         }
                     ).json(),
                 ])
-        print(answers[0][1])
 
         return [StackOverflowQuestion(x[0], x[1]) for x in answers]
 
