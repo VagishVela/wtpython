@@ -58,7 +58,7 @@ class StackOverflowFinder:
                 answers.append([
                     i,
                     self.session.get(
-                        f'https://api.stackexchange.com/{i["question_id"]}/answers',
+                        f'https://api.stackexchange.com/questions/{i["question_id"]}/answers',
                         params={
                             "order": "desc",
                             "sort": "activity",
@@ -67,5 +67,10 @@ class StackOverflowFinder:
                         }
                     ).json(),
                 ])
+        print(answers[0][1])
 
         return [StackOverflowQuestion(x[0], x[1]) for x in answers]
+
+
+if __name__ == "__main__":
+    print(StackOverflowFinder().search("requests.exceptions.missingschema", 10)[0].answers[0].score)
