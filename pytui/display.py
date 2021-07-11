@@ -3,8 +3,7 @@ from textual.app import App
 from textual.view import DockView
 from textual.widgets import Footer, Header, Placeholder, ScrollView
 
-from pytui.backends.stackoverflow import StackOverflowFinder
-from pytui.parse_errors import run_and_get_errors
+from pytui.core import get_all_error_results
 from pytui.settings import APP_NAME
 
 
@@ -18,17 +17,16 @@ class Display(App):
 
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
-        self.error, self.packages = run_and_get_errors()
         view = await self.push_view(DockView())
 
-        stack_overflow = StackOverflowFinder()
-        error_answers = stack_overflow.search(self.error, 10)  # noqa: F841
+        results = get_all_error_results()
 
-        header = Header(f"{APP_NAME}: {self.error}")
+        header = Header(f"{APP_NAME}: {results['error']}")
         footer = Footer()
         sidebar = Placeholder(name="sidebar")
 
-        body = ScrollView(f"We found {len(error_answers)} answers")
+        num_answers = len(results['results'])
+        body = ScrollView(f'Found {num_answers} answers!')
 
         footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")

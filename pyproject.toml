@@ -36,7 +36,7 @@ dev = [
 ]
 
 [tool.flit.scripts]
-pytui = "pytui.main:main"
+pytui = "pytui.__main__:main"
 
 [tool.coverage.run]
 source = ["src"]
