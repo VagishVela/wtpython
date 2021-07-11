@@ -1,6 +1,7 @@
 from typing import List
 
 import requests
+from rich import print
 
 from pytui.settings import SO_FILTER
 
@@ -52,6 +53,11 @@ class StackOverflowFinder:
             },
         )
         data = result.json()
+
+        if not result.ok:
+            print("Error fetching StackOverflow response: ", data)
+            return None
+
         answers = []
         for i in data["items"]:
             if i["is_answered"]:
