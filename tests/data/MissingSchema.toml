@@ -1,0 +1,20 @@
+traceback = '''
+Traceback (most recent call last):
+  File "/path/to/example/runs_with_error.py", line 9, in <module>
+    requests.get('badurl')
+  File "/path/to/.venv/lib/python3.9/site-packages/requests/api.py", line 76, in get
+    return request('get', url, params=params, **kwargs)
+  File "/path/to/.venv/lib/python3.9/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/path/to/.venv/lib/python3.9/site-packages/requests/sessions.py", line 528, in request
+    prep = self.prepare_request(req)
+  File "/path/to/.venv/lib/python3.9/site-packages/requests/sessions.py", line 456, in prepare_request
+    p.prepare(
+  File "/path/to/.venv/lib/python3.9/site-packages/requests/models.py", line 316, in prepare
+    self.prepare_url(url, params)
+  File "/path/to/.venv/lib/python3.9/site-packages/requests/models.py", line 390, in prepare_url
+    raise MissingSchema(error)
+requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?
+'''
+error_message = "requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?"
+error_packages = ["requests"]
