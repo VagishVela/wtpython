@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-FILTER = "!6VvPDzQ)xXOrL"
+from pytui.settings import SO_FILTER
 
 
 class StackOverflowAnswer:
@@ -43,13 +43,13 @@ class StackOverflowFinder:
                                   f'&order=asc&sort=relevance&tagged=python'
                                   f'&intitle={error_message.split(" ")[0].strip(":")}'
                                   f'&site=stackoverflow'
-                                  f'&filter={FILTER}')
+                                  f'&filter={SO_FILTER}')
         data = result.json()
         answers = []
         for i in data["items"]:
             if i["is_answered"]:
                 answers.append([i, self.session.get(f'https://api.stackexchange.com/2.3/questions/{i["question_id"]}'
                                                     f'/answers?order=desc&sort=activity&site=stackoverflow'
-                                                    f'&filter={FILTER}').json()])
+                                                    f'&filter={SO_FILTER}').json()])
 
         return [StackOverflowQuestion(x[0], x[1]) for x in answers]
