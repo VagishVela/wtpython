@@ -18,7 +18,7 @@ class Display(App):
         """App layout"""
         self.error, self.packages = run_and_get_errors()
         view = await self.push_view(DockView())
-        header = Header(self.title)
+        header = Header("pytui")
         footer = Footer()
         sidebar = Placeholder(name="sidebar")
 
