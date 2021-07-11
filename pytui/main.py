@@ -3,8 +3,7 @@ from pytui.display.display import Display
 
 def main() -> None:
     """Run the application"""
-    display = Display(title="Simple App")
-    display.run()
+    Display().run()
 
 
 if __name__ == "__main__":
