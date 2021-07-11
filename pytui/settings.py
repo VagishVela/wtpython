@@ -1,0 +1,2 @@
+APP_NAME = "PyTUI"
+SO_FILTER = "!6VvPDzQ)xXOrL"

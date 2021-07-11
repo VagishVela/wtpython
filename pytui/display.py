@@ -4,7 +4,8 @@ from textual.view import DockView
 from textual.widgets import Footer, Header, Placeholder, ScrollView
 
 from pytui.backends.stackoverflow import StackOverflowFinder
-from pytui.parsers.parse_errors import run_and_get_errors
+from pytui.parse_errors import run_and_get_errors
+from pytui.settings import APP_NAME
 
 
 class Display(App):
@@ -23,7 +24,7 @@ class Display(App):
         stack_overflow = StackOverflowFinder()
         error_answers = stack_overflow.search(self.error, 10)  # noqa: F841
 
-        header = Header(f"PyTUI: {self.error}")
+        header = Header(f"{APP_NAME}: {self.error}")
         footer = Footer()
         sidebar = Placeholder(name="sidebar")
 

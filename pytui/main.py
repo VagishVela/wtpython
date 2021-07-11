@@ -1,4 +1,4 @@
-from pytui.display.display import Display
+from pytui.display import Display
 
 
 def main() -> None:
