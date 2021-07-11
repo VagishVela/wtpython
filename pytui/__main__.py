@@ -1,24 +1,14 @@
-import sys
-
+from pytui.arguments import args, parse_arguments
 from pytui.core import get_all_error_results
 from pytui.display import Display
 
 
 def main() -> None:
     """Run the application"""
-    no_display = False
+    parse_arguments()
 
-    if len(sys.argv) > 1 and sys.argv[1] == '-n':
-        no_display = True
-        sys.argv.pop(1)
-
-    if len(sys.argv) == 1:
-        print("Usage: pytui [-n] <script>")
-        sys.exit(1)
-
-    if no_display:
-        results = get_all_error_results()
-        print(results)
+    if args['no_display']:
+        print(get_all_error_results())
 
     else:
         Display().run()
