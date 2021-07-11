@@ -1,8 +1,9 @@
 from typing import List
 
-import requests
+import requests_cache
 from rich import print
 
+from pytui.backends import REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION
 from pytui.settings import SO_FILTER
 
 
@@ -34,9 +35,13 @@ class StackOverflowFinder:
     """Get results from Stack Overflow"""
 
     def __init__(self):
-        # Initialize SE API object...
-        self.session = requests.session()
-        pass
+        backend = requests_cache.backends.FileCache(REQUEST_CACHE_LOCATION)
+
+        self.session = requests_cache.CachedSession(
+            'stackoverflow',
+            backend=backend,
+            expire_after=REQUEST_CACHE_DURATION,
+        )
 
     def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
         """Search Stack Overflow with the initialized SE API object"""
