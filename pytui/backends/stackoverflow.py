@@ -1,13 +1,55 @@
 from typing import List
 
+import requests
+
+FILTER = "!6VvPDzQ)xXOrL"
+
+
+class StackOverflowAnswer:
+    """Stack overflow answer object"""
+
+    def __init__(self, answer_json: dict):
+        self.raw_json: dict = answer_json
+        self.is_accepted: bool = answer_json["is_accepted"]
+        self.score: int = answer_json["score"]
+        self.answer_id: int = answer_json["answer_id"]
+        self.body: str = answer_json["body"]
+
+
+class StackOverflowQuestion:
+    """Stack overflow question object"""
+
+    def __init__(self, question_json: dict, answer_json: dict):
+        self.raw_json: dict = question_json
+        self.question_id: int = question_json["question_id"]
+        self.link: str = question_json["link"]
+        self.title: str = question_json["title"]
+        self.score: int = question_json["score"]
+        self.body: str = question_json["body"]
+        self.answers: List[StackOverflowAnswer] = [StackOverflowAnswer(x) for x in answer_json["items"]]
+
 
 class StackOverflowFinder:
     """Get results from Stack Overflow"""
 
     def __init__(self):
         # Initialize SE API object...
+        self.session = requests.session()
         pass
 
-    def search(self, error_message: str) -> List[str]:
+    def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
         """Search Stack Overflow with the initialized SE API object"""
-        return ["Search Result"]
+        result = self.session.get(f'https://api.stackexchange.com/2.3/search?page=1&pagesize={max_results}'
+                                  f'&order=asc&sort=relevance&tagged=python'
+                                  f'&intitle={error_message.split(" ")[0].strip(":")}'
+                                  f'&site=stackoverflow'
+                                  f'&filter={FILTER}')
+        data = result.json()
+        answers = []
+        for i in data["items"]:
+            if i["is_answered"]:
+                answers.append([i, self.session.get(f'https://api.stackexchange.com/2.3/questions/{i["question_id"]}'
+                                                    f'/answers?order=desc&sort=activity&site=stackoverflow'
+                                                    f'&filter={FILTER}').json()])
+
+        return [StackOverflowQuestion(x[0], x[1]) for x in answers]

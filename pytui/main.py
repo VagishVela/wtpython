@@ -1,6 +1,7 @@
 import subprocess  # noqa: S404
 import sys
 
+from backends.stackoverflow import StackOverflowFinder
 from parse import findall
 from rich import print
 
@@ -42,6 +43,9 @@ def main() -> None:
         error_msg, packages = parse_err(result.stderr.decode('utf-8'))
         print(f"[red bold]Error Message:[/] {error_msg}")
         print(f"[blue bold]Packages:[/] {', '.join(packages)}")
+        stack_overflow = StackOverflowFinder()
+        error_answers = stack_overflow.search(error_msg, 10)  # noqa: F841
+        # Do stuff with error_answers and show to user in TUI
 
 
 if __name__ == "__main__":
