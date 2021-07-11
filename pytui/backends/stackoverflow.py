@@ -39,17 +39,33 @@ class StackOverflowFinder:
 
     def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
         """Search Stack Overflow with the initialized SE API object"""
-        result = self.session.get(f'https://api.stackexchange.com/2.3/search?page=1&pagesize={max_results}'
-                                  f'&order=asc&sort=relevance&tagged=python'
-                                  f'&intitle={error_message.split(" ")[0].strip(":")}'
-                                  f'&site=stackoverflow'
-                                  f'&filter={SO_FILTER}')
+        result = self.session.get(
+            "https://api.stackexchange.com/2.3/search",
+            params={
+                "pagesize": max_results,
+                "order": "desc",
+                "sort": "relevance",
+                "tagged": "python",
+                "intitle": error_message.split(" ")[0].strip(":"),
+                "site": "stackoverflow",
+                "filter": SO_FILTER,
+            },
+        )
         data = result.json()
         answers = []
         for i in data["items"]:
             if i["is_answered"]:
-                answers.append([i, self.session.get(f'https://api.stackexchange.com/2.3/questions/{i["question_id"]}'
-                                                    f'/answers?order=desc&sort=activity&site=stackoverflow'
-                                                    f'&filter={SO_FILTER}').json()])
+                answers.append([
+                    i,
+                    self.session.get(
+                        f'https://api.stackexchange.com/{i["question_id"]}/answers',
+                        params={
+                            "order": "desc",
+                            "sort": "activity",
+                            "site": "stackoverflow",
+                            "filter": SO_FILTER,
+                        }
+                    ).json(),
+                ])
 
         return [StackOverflowQuestion(x[0], x[1]) for x in answers]
