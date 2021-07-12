@@ -31,7 +31,7 @@ def get_all_error_results(max_results: int = 10) -> dict:
     parsed = parse_stacktrace(all_text)
 
     # Copy the error to the clipboard if asked
-    if parsed["error_message"]:
+    if args["copy_error"]:
         pyperclip.copy(parsed["error_message"])
 
     stack_overflow = StackOverflowFinder()
