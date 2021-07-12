@@ -2,39 +2,47 @@ import pytest
 import toml
 
 from pytui.parser import parse_stacktrace
+from pytui.settings import BASE_DIR
+
+TEST_DATA_DIR = BASE_DIR.parent / 'tests' / 'data'
 
 
-@pytest.fixture
-def sample_error(shared_datadir: pytest.fixture) -> dict:
-    """Iterate through all example cases in data directory."""
-    for file in shared_datadir.glob("*.toml"):
-        yield toml.load(file)
+for_each_example_stacktrace = pytest.mark.parametrize(
+    "example_stacktrace",
+    [
+        toml.load(example)
+        for example
+        in TEST_DATA_DIR.glob('*.toml')
+    ]
+)
 
 
-def test_parsing_has_correct_format(sample_error: pytest.fixture) -> None:
+@for_each_example_stacktrace
+def test_parsing_has_correct_format(example_stacktrace: dict) -> None:
     """Ensure parse_stacktrace provides dict."""
-    parsed = parse_stacktrace(sample_error['traceback'])
+    parsed = parse_stacktrace(example_stacktrace['traceback'])
     assert list(parsed.keys()) == ['error_message', 'files', 'packages']  # noqa: S101
-    for value in parsed.values():
-        assert value  # noqa: S101
 
 
-def test_correct_error_message(sample_error: pytest.fixture) -> None:
+@for_each_example_stacktrace
+def test_correct_error_message(example_stacktrace: dict) -> None:
     """Ensure that the error message is correctly capturerd."""
-    parsed = parse_stacktrace(sample_error['traceback'])
-    assert parsed['error_message'] == sample_error['error_message']  # noqa: S101
+    parsed = parse_stacktrace(example_stacktrace['traceback'])
+    assert parsed['error_message'] == example_stacktrace['error_message']  # noqa: S101
 
 
-def test_correct_file_references(sample_error: pytest.fixture) -> None:
+@for_each_example_stacktrace
+def test_correct_file_references(example_stacktrace: dict) -> None:
     """Ensure file information was extracted correctly."""
-    parsed = parse_stacktrace(sample_error['traceback'])
+    parsed = parse_stacktrace(example_stacktrace['traceback'])
     for field in ['file', 'line', 'method']:
         found = [i[field] for i in parsed['files']]
-        expected = [i[field] for i in sample_error['files']]
+        expected = [i[field] for i in example_stacktrace['files']]
         assert found == expected  # noqa: S101
 
 
-def test_correct_packages(sample_error: pytest.fixture) -> None:
+@for_each_example_stacktrace
+def test_correct_packages(example_stacktrace: dict) -> None:
     """Ensure that packages involved are correrctly identified."""
-    parsed = parse_stacktrace(sample_error['traceback'])
-    assert set(parsed['packages']) == set(sample_error['packages'])  # noqa: S101
+    parsed = parse_stacktrace(example_stacktrace['traceback'])
+    assert set(parsed['packages']) == set(example_stacktrace['packages'])  # noqa: S101
