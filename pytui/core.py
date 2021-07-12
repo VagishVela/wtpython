@@ -29,12 +29,6 @@ def get_all_error_results(max_results: int = 10) -> dict:
     parsed = parse_stacktrace(all_text)
 
     stack_overflow = StackOverflowFinder()
-    error_answers = stack_overflow.search(parsed['error_message'], max_results)  # noqa: F841
+    error_answers = stack_overflow.search(parsed["error_message"], max_results)
 
-    data = {
-        "error": parsed['error_message'],
-        "packages": parsed['packages'],
-        "results": error_answers
-    }
-
-    return data
+    return {"results": error_answers, **parsed}

@@ -21,7 +21,7 @@ class Display(App):
 
         results = get_all_error_results()
 
-        header = Header(f"{APP_NAME}: {results['error']}")
+        header = Header(f"{APP_NAME}: {results['error_message']}")
         footer = Footer()
         sidebar = Placeholder(name="sidebar")
 
