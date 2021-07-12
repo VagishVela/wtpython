@@ -42,6 +42,8 @@ Packages: requests
 
 ## Development Tools
 
+- [Rich](https://rich.readthedocs.io/en/stable/) is a library to create styled text to the terminal. We'll use it for styling and formatting text.
+- [Textual](https://github.com/willmcgugan/textual) is a part of rich to further aid in TUI design. We'll use it to create widgets and adjust the change the layout of the TUI.
 - [Flit](https://flit.readthedocs.io/en/latest/) is a simple way to develop Python packages. It's pretty lightweight but can do a lot. We'll use it to manage dependencies.
 - [pre-commit](https://pre-commit.com/) will run a few tests before you can commit your code. Don't worry, it will make the changes for you. Worst case, you'll have to type the `git add/commit` lines twice.
 
