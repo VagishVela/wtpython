@@ -4,7 +4,7 @@ import pyperclip
 
 from pytui.arguments import args
 from pytui.backends.stackoverflow import StackOverflowFinder
-from pytui.parser import parse_error
+from pytui.parser import parse_stacktrace
 
 
 def run_and_get_stderr() -> str:
@@ -28,19 +28,13 @@ def get_all_error_results(max_results: int = 10) -> dict:
     StackOverflow backend and all the results are returned.
     """
     all_text = run_and_get_stderr()
-    error, packages = parse_error(all_text)
+    parsed = parse_stacktrace(all_text)
 
     # Copy the error to the clipboard if asked
-    if args['copy_error']:
-        pyperclip.copy(error)
+    if parsed["error_message"]:
+        pyperclip.copy(parsed["error_message"])
 
     stack_overflow = StackOverflowFinder()
-    error_answers = stack_overflow.search(error, max_results)  # noqa: F841
+    error_answers = stack_overflow.search(parsed["error_message"], max_results)
 
-    data = {
-        "error": error,
-        "packages": packages,
-        "results": error_answers
-    }
-
-    return data
+    return {"results": error_answers, **parsed}
