@@ -17,4 +17,39 @@ Traceback (most recent call last):
 requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?
 '''
 error_message = "requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?"
-error_packages = ["requests"]
+packages = ["requests"]
+
+[[files]]
+file = "/path/to/example/runs_with_error.py"
+line = "9"
+method = "<module>"
+
+[[files]]
+file = "/path/to/.venv/lib/python3.9/site-packages/requests/api.py"
+line = "76"
+method = "get"
+
+[[files]]
+file = "/path/to/.venv/lib/python3.9/site-packages/requests/api.py"
+line = "61"
+method = "request"
+
+[[files]]
+file = "/path/to/.venv/lib/python3.9/site-packages/requests/sessions.py"
+line = "528"
+method = "request"
+
+[[files]]
+file = "/path/to/.venv/lib/python3.9/site-packages/requests/sessions.py"
+line = "456"
+method = "prepare_request"
+
+[[files]]
+file = "/path/to/.venv/lib/python3.9/site-packages/requests/models.py"
+line = "316"
+method = "prepare"
+
+[[files]]
+file = "/path/to/.venv/lib/python3.9/site-packages/requests/models.py"
+line = "390"
+method = "prepare_url"
