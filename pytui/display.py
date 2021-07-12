@@ -1,3 +1,6 @@
+import html2text
+from rich.console import RenderableType
+from rich.markdown import Markdown
 from textual import events
 from textual.app import App
 from textual.view import DockView
@@ -15,18 +18,35 @@ class Display(App):
         await self.bind("q,ctrl+c", "quit")
         await self.bind("b", "view.toggle('sidebar')")
 
+    def create_body_text(self) -> RenderableType:
+        """Return the text to display in the ScrollView"""
+        if self.data['results'] == []:
+            return "Could not find any results. Sorry!"
+
+        # For now assume first question... but ideally user should be able to pick
+        # the question from the sidebar
+        question = self.data['results'][0]
+
+        text = ""
+        for index, answer in enumerate(question.answers):
+            text += f"---\n### Answer {index}\n---\n"
+            text += html2text.html2text(answer.body)
+            text += "\n"
+
+        output = Markdown(text)
+        return output
+
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
         view = await self.push_view(DockView())
 
-        results = get_all_error_results()
+        self.data = get_all_error_results()
 
-        header = Header(f"{APP_NAME}: {results['error_message']}")
+        header = Header(f"{APP_NAME}: {self.data['error_message']}")
         footer = Footer()
         sidebar = Placeholder(name="sidebar")
 
-        num_answers = len(results['results'])
-        body = ScrollView(f'Found {num_answers} answers!')
+        body = ScrollView(self.create_body_text())
 
         footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")
