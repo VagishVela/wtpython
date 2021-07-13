@@ -44,4 +44,5 @@ def parse_stacktrace(txt: str) -> dict[str, Any]:
         'error_message': error_message,
         'files': files,
         'packages': packages,
+        'stacktrace': txt,
     }
