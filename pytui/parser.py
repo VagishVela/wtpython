@@ -13,7 +13,7 @@ def _error_message(txt: str) -> str:
 
 
 def _error_files(txt: str) -> list[dict[str, str]]:
-    """Extract files named in stack trace."""
+    """Extract files named in traceback."""
     return [
         line.named
         for line
@@ -34,8 +34,8 @@ def _extract_packages(files: list[dict[str, str]]) -> set[str]:
     return packages
 
 
-def parse_stacktrace(txt: str) -> dict[str, Any]:
-    """Extract error message and packages involved in stack trace."""
+def parse_traceback(txt: str) -> dict[str, Any]:
+    """Extract error message and packages involved in traceback."""
     error_message = _error_message(txt)
     files = _error_files(txt)
     packages = _extract_packages(files)
@@ -44,4 +44,5 @@ def parse_stacktrace(txt: str) -> dict[str, Any]:
         'error_message': error_message,
         'files': files,
         'packages': packages,
+        'traceback': txt,
     }
