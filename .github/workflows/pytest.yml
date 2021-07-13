@@ -11,7 +11,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     env:
       # Set an environment variable to select pip's cache directory for us to actually cache between runs.
       PIP_CACHE_DIR: /tmp/pip-cache-dir
