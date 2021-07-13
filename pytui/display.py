@@ -1,3 +1,5 @@
+import webbrowser
+
 import markdownify
 from rich.console import RenderableType
 from rich.markdown import Markdown
@@ -19,6 +21,7 @@ class Display(App):
         await self.bind("b", "view.toggle('sidebar')")
         await self.bind("up", "prev_question")
         await self.bind("down", "next_question")
+        await self.bind("o", "open_browser")
 
     def create_body_text(self) -> RenderableType:
         """Return the text to display in the ScrollView"""
@@ -51,6 +54,11 @@ class Display(App):
         if self.index != 0:
             self.index -= 1
             await self.body.update(self.create_body_text())
+
+    async def action_open_browser(self) -> None:
+        """Open the question in the browser"""
+        if self.data["results"] != []:
+            webbrowser.open(self.data["results"][self.index].url)
 
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
