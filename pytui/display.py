@@ -1,7 +1,7 @@
 import webbrowser
 from typing import List, Union
 
-import markdownify
+from markdownify import markdownify as md
 from rich import box
 from rich.align import Align
 from rich.console import RenderableType
@@ -81,11 +81,10 @@ class Display(App):
 
         question: StackOverflowQuestion = self.data['results'][self.index]
         text = ""
-        text += f'Question #{self.index + 1} - {question.title}\n\n{markdownify.markdownify(question.body)}\n'
+        text += f'Question #{self.index + 1} - {question.title}\n\n{md(question.body)}\n'
         for number, answer in enumerate(question.answers):
             text += f"---\n### Answer {number + 1}\n---\n"
-            text += markdownify.markdownify(answer.body)
-
+            text += md(answer.body)
             text += "\n"
 
         output = Markdown(text)
