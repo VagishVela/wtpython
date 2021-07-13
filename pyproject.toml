@@ -76,3 +76,5 @@ unauthorized_licenses = [
 ]
 
 [tool.liccheck.authorized_packages]
+requests-cache = "0.7.1"
+flake8-isort = "~=4.0"
