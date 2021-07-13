@@ -46,3 +46,33 @@ source = ["src"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.liccheck]
+authorized_licenses = [
+    "bsd",
+    "new bsd",
+    "bsd license",
+    "new bsd license",
+    "simplified bsd",
+    "apache",
+    "apache 2.0",
+    "apache software",
+    "apache software license",
+    "gnu lgpl",
+    "lgpl with exceptions or zpl",
+    "isc license",
+    "isc license (iscl)",
+    "mit",
+    "mit license",
+    "MPL 2.0",
+    "Mozilla Public License 2.0 (MPL 2.0)",
+    "python software foundation license",
+    "Python Software Foundation",
+    "public domain",
+    "zpl 2.1"
+]
+unauthorized_licenses = [
+    "gpl v3"
+]
+
+[tool.liccheck.authorized_packages]
