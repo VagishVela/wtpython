@@ -36,9 +36,9 @@ class Sidebar(Widget):
         text = ""
         for i, question in enumerate(self.questions):
             if i == self.index:
-                text += f"[yellow]#{i + 1} - "+question.title + "\n\n"
+                text += f"[yellow]#{i + 1} - "+question.title + "[/yellow]\n\n"
             else:
-                text += f"[white]#{i + 1} - "+question.title + "\n\n"
+                text += f"[white]#{i + 1} - "+question.title + "[/white]\n\n"
 
         return text
 
