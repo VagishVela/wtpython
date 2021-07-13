@@ -1,4 +1,4 @@
-import html2text
+from markdownify import markdownify as md
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from textual import events
@@ -26,11 +26,11 @@ class Display(App):
         # For now assume first question... but ideally user should be able to pick
         # the question from the sidebar
         question = self.data['results'][0]
-
+        print(question)
         text = ""
         for index, answer in enumerate(question.answers):
             text += f"---\n### Answer {index}\n---\n"
-            text += html2text.html2text(answer.body)
+            text += md(answer.body)
             text += "\n"
 
         output = Markdown(text)
