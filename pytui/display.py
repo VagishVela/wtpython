@@ -1,5 +1,6 @@
 import webbrowser
 from typing import List, Union
+from urllib.parse import urlencode
 
 from markdownify import markdownify as md
 from rich import box
@@ -63,6 +64,7 @@ class Display(App):
         await self.bind("b", "view.toggle('sidebar')")
 
         await self.bind("o", "open_browser")
+        await self.bind("g", "open_google")
 
         await self.bind("left", "prev_question")
         await self.bind("right", "next_question")
@@ -109,6 +111,13 @@ class Display(App):
         if self.data["results"] != []:
             webbrowser.open(self.data["results"][self.index].link)
 
+    async def action_open_google(self) -> None:
+        """Open the browser with google search results"""
+        if self.data["error_message"]:
+            params = {'q': 'python ' + self.data['error_message']}
+            url = 'https://www.google.com/search?' + urlencode(params)
+            webbrowser.open(url)
+
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
         view = await self.push_view(DockView())
@@ -122,6 +131,7 @@ class Display(App):
         footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")
         footer.add_key("o", "Open question in browser")
+        footer.add_key("g", "Google search error")
         footer.add_key("←", "Previous question")
         footer.add_key("→", "Next question")
 
