@@ -61,9 +61,15 @@ class Display(App):
         """Navigation setup for display"""
         await self.bind("q,ctrl+c", "quit")
         await self.bind("b", "view.toggle('sidebar')")
-        await self.bind("up", "prev_question")
-        await self.bind("down", "next_question")
+
         await self.bind("o", "open_browser")
+
+        await self.bind("left", "prev_question")
+        await self.bind("right", "next_question")
+
+        # Vim shortcuts...
+        await self.bind("k", "prev_question")
+        await self.bind("l", "next_question")
 
     def create_body_text(self) -> RenderableType:
         """Return the text to display in the ScrollView"""
@@ -111,14 +117,14 @@ class Display(App):
         self.data = get_all_error_results()
         header = Header()
         footer = Footer()
-        self.sidebar = Sidebar("Sidebar", self.data["results"])
+        self.sidebar = Sidebar("sidebar", self.data["results"])
         self.body = ScrollView(self.create_body_text())
 
         footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")
         footer.add_key("o", "Open question in browser")
-        footer.add_key("^", "Previous question")
-        footer.add_key("v", "Next question")
+        footer.add_key("←", "Previous question")
+        footer.add_key("→", "Next question")
 
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
