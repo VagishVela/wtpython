@@ -19,6 +19,7 @@ requires=[
     "pyperclip == 1.8.2",
     "requests-cache == 0.7.1",
     "html2text == 2020.1.16",
+    "markdownify == 0.9.2",
 ]
 
 [tool.flit.metadata.requires-extra]
