@@ -3,7 +3,7 @@ from rich.console import RenderableType
 from rich.markdown import Markdown
 from textual import events
 from textual.app import App
-from textual.view import DockView
+from textual.views import DockView
 from textual.widgets import Footer, Header, Placeholder, ScrollView
 
 from pytui.core import get_all_error_results
@@ -41,8 +41,9 @@ class Display(App):
         view = await self.push_view(DockView())
 
         self.data = get_all_error_results()
+        self.title = f"{APP_NAME}: {self.data['error_message']}"
 
-        header = Header(f"{APP_NAME}: {self.data['error_message']}")
+        header = Header()
         footer = Footer()
         sidebar = Placeholder(name="sidebar")
 

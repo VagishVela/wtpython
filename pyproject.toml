@@ -12,9 +12,9 @@ requires-python=">=3.9"
 requires=[
     "parse == 1.19.0",
     "requests == 2.25.1",
-    "textual == 0.1.5",
+    "textual == 0.1.6",
     "toml == 0.10.2",
-    "rich == 10.5.0",
+    "rich == 10.6.0",
     "typer == 0.3.2",
     "pyperclip == 1.8.2",
     "requests-cache == 0.7.1",
