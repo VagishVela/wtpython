@@ -1,3 +1,5 @@
+import webbrowser
+
 import html2text
 from rich.console import RenderableType
 from rich.markdown import Markdown
@@ -17,6 +19,7 @@ class Display(App):
         """Navigation setup for display"""
         await self.bind("q,ctrl+c", "quit")
         await self.bind("b", "view.toggle('sidebar')")
+        await self.bind("v", webbrowser.open("need the stack overflow url"))
 
     def create_body_text(self) -> RenderableType:
         """Return the text to display in the ScrollView"""
@@ -50,6 +53,7 @@ class Display(App):
 
         footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")
+        footer.add_key("v", "Open in Browser")
 
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
