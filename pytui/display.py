@@ -36,9 +36,9 @@ class Sidebar(Widget):
         text = ""
         for i, question in enumerate(self.questions):
             if i == self.index:
-                text += f"[yellow]#{i + 1} - "+question.title + "[/yellow]\n\n"
+                text += f"[yellow]#{i + 1} - {question.title}[/yellow]\n\n"
             else:
-                text += f"[white]#{i + 1} - "+question.title + "[/white]\n\n"
+                text += f"[white]#{i + 1} - {question.title}[/white]\n\n"
 
         return text
 
@@ -95,6 +95,8 @@ class Display(App):
         if len(self.data["results"]) > self.index + 1:
             self.index += 1
             await self.body.update(self.create_body_text())
+            self.body.y = 0
+            self.body.target_y = 0
             self.sidebar.set_index(self.index)
 
     async def action_prev_question(self) -> None:
@@ -102,6 +104,8 @@ class Display(App):
         if self.index != 0:
             self.index -= 1
             await self.body.update(self.create_body_text())
+            self.body.y = 0
+            self.body.target_y = 0
             self.sidebar.set_index(self.index)
 
     async def action_open_browser(self) -> None:
@@ -125,6 +129,7 @@ class Display(App):
         footer.add_key("←", "Previous question")
         footer.add_key("→", "Next question")
 
+        await self.set_focus(self.body._page)
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar, edge="left", size=30)
