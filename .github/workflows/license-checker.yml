@@ -32,7 +32,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest flit liccheck
           flit install
-      - name: Test with pytest
+      - name: Check for compatibility with MIT license
         run: |
           pip freeze > dev-requirements.txt
           liccheck -r dev-requirements.txt
