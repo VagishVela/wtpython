@@ -60,6 +60,7 @@ authorized_licenses = [
     "apache software license",
     "gnu lgpl",
     "lgpl with exceptions or zpl",
+    "GNU Library or Lesser General Public License (LGPL)",
     "isc license",
     "isc license (iscl)",
     "mit",
