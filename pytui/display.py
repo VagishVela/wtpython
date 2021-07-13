@@ -95,6 +95,8 @@ class Display(App):
         if len(self.data["results"]) > self.index + 1:
             self.index += 1
             await self.body.update(self.create_body_text())
+            self.body.y = 0
+            self.body.target_y = 0
             self.sidebar.set_index(self.index)
 
     async def action_prev_question(self) -> None:
@@ -102,6 +104,8 @@ class Display(App):
         if self.index != 0:
             self.index -= 1
             await self.body.update(self.create_body_text())
+            self.body.y = 0
+            self.body.target_y = 0
             self.sidebar.set_index(self.index)
 
     async def action_open_browser(self) -> None:
