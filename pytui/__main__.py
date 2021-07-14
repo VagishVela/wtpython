@@ -9,7 +9,7 @@ from pytui.display import Display, store_results_in_module
 from pytui.settings import MAX_SO_RESULTS
 
 
-def parse_arguments() -> None:
+def parse_arguments() -> tuple[dict, list]:
     """Parse arguments and store them in pytui.arguments.args"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
