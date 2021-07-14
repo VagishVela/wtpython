@@ -1,6 +1,7 @@
 from typing import List
 
-import requests_cache
+from requests_cache import CachedSession
+from requests_cache.backends import FileCache
 from rich import print
 
 from wtpython import SearchError
@@ -35,18 +36,16 @@ class StackOverflowQuestion:
 class StackOverflowFinder:
     """Get results from Stack Overflow"""
 
-    def __init__(self):
-        backend = requests_cache.backends.FileCache(REQUEST_CACHE_LOCATION)
-
-        self.session = requests_cache.CachedSession(
+    def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
+        """Search Stack Overflow with the initialized SE API object"""
+        # Initialize the cache for the HTTP requests, and the session
+        session = CachedSession(
             'stackoverflow',
-            backend=backend,
+            backend=FileCache(REQUEST_CACHE_LOCATION),
             expire_after=REQUEST_CACHE_DURATION,
         )
 
-    def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
-        """Search Stack Overflow with the initialized SE API object"""
-        result = self.session.get(
+        result = session.get(
             "https://api.stackexchange.com/2.3/search",
             params={
                 "pagesize": max_results,
@@ -68,7 +67,7 @@ class StackOverflowFinder:
             if i["is_answered"]:
                 answers.append([
                     i,
-                    self.session.get(
+                    session.get(
                         f'https://api.stackexchange.com/questions/{i["question_id"]}/answers',
                         params={
                             "order": "desc",
@@ -78,6 +77,8 @@ class StackOverflowFinder:
                         }
                     ).json(),
                 ])
+
+        session.close()
 
         return [StackOverflowQuestion(x[0], x[1]) for x in answers]
 
