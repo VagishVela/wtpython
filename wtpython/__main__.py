@@ -3,15 +3,15 @@ import argparse
 import pyperclip
 from rich import print
 
-from pytui import SearchError
-from pytui.backends.stackoverflow import StackOverflowFinder
-from pytui.core import parse_traceback, run_and_get_stderr
-from pytui.display import Display, store_results_in_module
-from pytui.settings import MAX_SO_RESULTS
+from wtpython import SearchError
+from wtpython.backends.stackoverflow import StackOverflowFinder
+from wtpython.core import parse_traceback, run_and_get_stderr
+from wtpython.display import Display, store_results_in_module
+from wtpython.settings import MAX_SO_RESULTS
 
 
 def parse_arguments() -> tuple[dict, list]:
-    """Parse arguments and store them in pytui.arguments.args"""
+    """Parse arguments and store them in wtpython.arguments.args"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-n",

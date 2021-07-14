@@ -14,8 +14,8 @@ from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
-from pytui.backends.stackoverflow import StackOverflowQuestion
-from pytui.settings import APP_NAME
+from wtpython.backends.stackoverflow import StackOverflowQuestion
+from wtpython.settings import APP_NAME
 
 PARSED_TB: dict[str, Any] = {}
 SO_RESULTS: list[StackOverflowQuestion] = []
