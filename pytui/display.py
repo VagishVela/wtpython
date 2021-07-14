@@ -133,11 +133,11 @@ class Display(App):
         self.body = ScrollView(self.create_body_text())
 
         footer.add_key("q", "Quit")
-        footer.add_key("←", "Previous question")
-        footer.add_key("→", "Next question")
-        footer.add_key("s", "Toggle question list")
-        footer.add_key("d", "Open question in browser")
-        footer.add_key("f", "Google search error")
+        footer.add_key("←", "Previous Question")
+        footer.add_key("→", "Next Question")
+        footer.add_key("s", "Toggle Question List")
+        footer.add_key("d", "Open in Browser")
+        footer.add_key("f", "Search Google")
 
         await self.set_focus(self.body._page)
         await view.dock(header, edge="top")
