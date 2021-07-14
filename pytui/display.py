@@ -1,5 +1,5 @@
 import webbrowser
-from typing import List, Union
+from typing import Any, List, Union
 from urllib.parse import urlencode
 
 from markdownify import markdownify as md
@@ -15,7 +15,23 @@ from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
 from pytui.backends.stackoverflow import StackOverflowQuestion
-from pytui.core import get_all_error_results
+
+PARSED_TB: dict[str, Any] = {}
+SO_RESULTS: list[StackOverflowQuestion] = []
+
+
+def store_results_in_module(parsed_tb: dict[str, Any], so_results: list[StackOverflowQuestion]) -> None:
+    """Unfortunate hack since there is an error with passing values to Display.
+
+    Display inherits App and somwhere in the App.__init__ flow, values are
+    overwritten. These global variables are used in lieu of passing to
+    Display for now.
+
+    These values are used in `Display.on_startup`
+    """
+    global SO_RESULTS, PARSED_TB
+    SO_RESULTS = so_results
+    PARSED_TB = parsed_tb
 
 
 class Sidebar(Widget):
@@ -126,7 +142,7 @@ class Display(App):
         """App layout"""
         view = await self.push_view(DockView())
         self.index = 0
-        self.data = get_all_error_results()
+        self.data = {'results': SO_RESULTS, **PARSED_TB}
         header = Header()
         footer = Footer()
         self.sidebar = Sidebar("sidebar", self.data["results"])

@@ -1,21 +1,31 @@
 import argparse
 import subprocess  # noqa: S404
-import sys
-from collections import defaultdict
 from typing import Any
 
-import pyperclip
 from parse import findall
 
 from pytui.backends.stackoverflow import StackOverflowFinder
 
-args = defaultdict(lambda: None)
+
+def parse_arguments() -> None:
+    """Parse arguments and store them in pytui.arguments.args"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--no-display",
+                        action='store_true',
+                        default=False,
+                        help="Run without display")
+    parser.add_argument("-c", "--copy-error",
+                        action='store_true',
+                        default=False,
+                        help="Copy error to clipboard")
+
+    flags, args = parser.parse_known_args()
+    return vars(flags), args
 
 
-def run_and_get_stderr() -> str:
+def run_and_get_stderr(args: list[str]) -> str:
     """Run the python script and return the stderr output"""
-    # TODO: Perhaps add a way to also pass in extra arguments
-    run_args = ["python", args['script']]
+    run_args = ["python", *args]
     process = subprocess.run(run_args, stderr=subprocess.PIPE, shell=False)  # noqa: S603
 
     if not process.stderr:
@@ -24,7 +34,7 @@ def run_and_get_stderr() -> str:
     return process.stderr.decode('utf-8')
 
 
-def get_all_error_results(max_results: int = 10) -> dict:
+def get_all_error_results(parsed_tb: dict[str, Any], max_results: int = 10) -> dict:
     """
     This is the core function that runs the script and returns error results
 
@@ -32,17 +42,9 @@ def get_all_error_results(max_results: int = 10) -> dict:
     program is parsed for the error. This error is then passed to the
     StackOverflow backend and all the results are returned.
     """
-    all_text = run_and_get_stderr()
-    parsed = parse_traceback(all_text)
-
-    # Copy the error to the clipboard if asked
-    if args["copy_error"]:
-        pyperclip.copy(parsed["error_message"])
-
     stack_overflow = StackOverflowFinder()
-    error_answers = stack_overflow.search(parsed["error_message"], max_results)
-
-    return {"results": error_answers, **parsed}
+    error_answers = stack_overflow.search(parsed_tb["error_message"], max_results)
+    return {"results": error_answers, **parsed_tb}
 
 
 def _error_message(txt: str) -> str:
@@ -88,23 +90,3 @@ def parse_traceback(txt: str) -> dict[str, Any]:
         'packages': packages,
         'traceback': txt,
     }
-
-
-def parse_arguments() -> None:
-    """Parse arguments and store them in pytui.arguments.args"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--no-display",
-                        action='store_true',
-                        default=False,
-                        help="Run without display")
-    parser.add_argument("-c", "--copy-error",
-                        action='store_true',
-                        default=False,
-                        help="Copy error to clipboard")
-    parser.add_argument("script", help="Python script to run")
-
-    # Keep the remaining arguments in `sys.argv`
-    parsed, sys.argv[1:] = parser.parse_known_args()
-
-    global args
-    args.update(vars(parsed))
