@@ -15,6 +15,7 @@ from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
 from pytui.backends.stackoverflow import StackOverflowQuestion
+from pytui.settings import APP_NAME
 
 PARSED_TB: dict[str, Any] = {}
 SO_RESULTS: list[StackOverflowQuestion] = []
@@ -140,6 +141,7 @@ class Display(App):
 
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
+        self.title = f"{APP_NAME} | {PARSED_TB['error_message']}"
         view = await self.push_view(DockView())
         self.index = 0
         self.data = {'results': SO_RESULTS, **PARSED_TB}
