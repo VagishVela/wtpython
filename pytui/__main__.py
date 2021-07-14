@@ -1,7 +1,6 @@
 from rich import print
 
-from pytui.arguments import args, parse_arguments
-from pytui.core import get_all_error_results
+from pytui.core import args, get_all_error_results, parse_arguments
 from pytui.display import Display
 
 
