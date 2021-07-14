@@ -3,6 +3,7 @@ from typing import List
 import requests_cache
 from rich import print
 
+from pytui import SearchError
 from pytui.backends import REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION
 from pytui.settings import SO_FILTER
 
@@ -60,8 +61,7 @@ class StackOverflowFinder:
         data = result.json()
 
         if not result.ok:
-            print("Error fetching StackOverflow response: ", data)
-            return None
+            raise SearchError("Error fetching StackOverflow response: {data}")
 
         answers = []
         for i in data["items"]:

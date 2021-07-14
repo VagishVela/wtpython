@@ -135,7 +135,7 @@ class Display(App):
     async def action_open_google(self) -> None:
         """Open the browser with google search results"""
         if self.data["error_message"]:
-            params = {'q': 'python ' + self.data['error_message']}
+            params = {'q': f"python {self.data['error_message']}"}
             url = 'https://www.google.com/search?' + urlencode(params)
             webbrowser.open(url)
 
