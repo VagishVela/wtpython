@@ -1,4 +1,4 @@
-# PyTUI
+# What The Python?!
 
 Helping you find answers to the errors Python spits out.
 
@@ -29,10 +29,10 @@ Traceback (most recent call last):
 requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?
 ```
 
-In this case, simply replace `python` with `pytui` and you will see the error message line as well as what installed packages were part of the stack trace.
+In this case, simply replace `python` with `wtpython` and you will see the error message line as well as what installed packages were part of the stack trace.
 
 ```
-$ pytui example/runs_with_error.py
+$ wtpython example/runs_with_error.py
 0
 1
 2

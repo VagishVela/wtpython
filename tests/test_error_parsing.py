@@ -1,8 +1,8 @@
 import pytest
 import toml
 
-from pytui.core import parse_traceback
-from pytui.settings import BASE_DIR
+from wtpython.core import parse_traceback
+from wtpython.settings import BASE_DIR
 
 TEST_DATA_DIR = BASE_DIR.parent / 'tests' / 'data'
 

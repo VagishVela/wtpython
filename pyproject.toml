@@ -3,7 +3,7 @@ requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
-module = "pytui"
+module = "wtpython"
 author = "Perceptive Porcupines"
 author-email = "email@example.com"
 classifiers = [ "License :: OSI Approved :: MIT License",]
@@ -38,7 +38,7 @@ dev = [
 ]
 
 [tool.flit.scripts]
-pytui = "pytui.__main__:main"
+wtpython = "wtpython.__main__:main"
 
 [tool.coverage.run]
 source = ["src"]
