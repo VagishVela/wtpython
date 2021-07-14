@@ -1,10 +1,34 @@
+import argparse
+
 import pyperclip
 from rich import print
 
 from pytui.backends.stackoverflow import StackOverflowFinder
-from pytui.core import parse_arguments, parse_traceback, run_and_get_stderr
+from pytui.core import parse_traceback, run_and_get_stderr
 from pytui.display import Display, store_results_in_module
 from pytui.settings import MAX_SO_RESULTS
+
+
+def parse_arguments() -> None:
+    """Parse arguments and store them in pytui.arguments.args"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-n",
+        "--no-display",
+        action='store_true',
+        default=False,
+        help="Run without display",
+    )
+    parser.add_argument(
+        "-c",
+        "--copy-error",
+        action='store_true',
+        default=False,
+        help="Copy error to clipboard",
+    )
+
+    flags, args = parser.parse_known_args()
+    return vars(flags), args
 
 
 def main() -> None:
