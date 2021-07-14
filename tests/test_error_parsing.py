@@ -1,7 +1,7 @@
 import pytest
 import toml
 
-from pytui.parser import parse_traceback
+from pytui.core import parse_traceback
 from pytui.settings import BASE_DIR
 
 TEST_DATA_DIR = BASE_DIR.parent / 'tests' / 'data'
