@@ -2,7 +2,7 @@ import webbrowser
 from typing import Any, List, Union
 from urllib.parse import urlencode
 
-from markdownify import markdownify as md
+from markdownify import MarkdownConverter
 from rich import box
 from rich.align import Align
 from rich.console import RenderableType
@@ -33,6 +33,16 @@ def store_results_in_module(parsed_tb: dict[str, Any], so_results: list[StackOve
     global SO_RESULTS, PARSED_TB
     SO_RESULTS = so_results
     PARSED_TB = parsed_tb
+
+
+class PythonCodeConverter(MarkdownConverter):
+    """Create a custom MarkdownConverter that adds adds python syntax highlighting."""
+
+    def convert_pre(self, el: Any, text: str, convert_as_inline: bool) -> str:
+        """Convert the <pre> tag into a code blocked marked with py"""
+        if not text:
+            return ''
+        return '\n```py\n%s\n```\n' % text
 
 
 class Sidebar(Widget):
@@ -98,15 +108,17 @@ class Display(App):
         # For now assume first question... but ideally user should be able to pick
         # the question from the sidebar
 
+        converter = PythonCodeConverter()
         question: StackOverflowQuestion = self.data['results'][self.index]
         text = ""
-        text += f'Question #{self.index + 1} - {question.title}\n\n{md(question.body)}\n'
+        text += f'Question #{self.index + 1} - {question.title}\n\n'
+        text += f'{converter.convert(question.body)}\n'
         for number, answer in enumerate(question.answers):
             text += f"---\n### Answer {number + 1}\n---\n"
-            text += md(answer.body)
+            text += converter.convert(answer.body)
             text += "\n"
 
-        output = Markdown(text)
+        output = Markdown(text, inline_code_lexer="python")
         return output
 
     async def action_next_question(self) -> None:
