@@ -92,7 +92,7 @@ def parse_traceback(txt: str) -> dict[str, Any]:
 
 def parse_arguments() -> None:
     """Parse arguments and store them in pytui.arguments.args"""
-    parser = argparse.ArgumentParser(sys.argv[0])
+    parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--no-display",
                         action='store_true',
                         default=False,
