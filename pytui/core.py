@@ -10,7 +10,7 @@ def run_and_get_stderr(args: list[str]) -> str:
     process = subprocess.run(run_args, stderr=subprocess.PIPE, shell=False)  # noqa: S603
 
     if not process.stderr:
-        return None
+        return ''
 
     return process.stderr.decode('utf-8')
 
