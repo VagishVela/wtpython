@@ -61,10 +61,10 @@ class Display(App):
     async def on_load(self, event: events.Load) -> None:
         """Navigation setup for display"""
         await self.bind("q,ctrl+c", "quit")
-        await self.bind("s", "view.toggle('sidebar')")
+        await self.bind("b", "view.toggle('sidebar')")
 
-        await self.bind("d", "open_browser")
-        await self.bind("f", "open_google")
+        await self.bind("o", "open_browser")
+        await self.bind("g", "open_google")
 
         await self.bind("left", "prev_question")
         await self.bind("right", "next_question")
@@ -132,12 +132,12 @@ class Display(App):
         self.sidebar = Sidebar("sidebar", self.data["results"])
         self.body = ScrollView(self.create_body_text())
 
+        footer.add_key("b", "Toggle sidebar")
         footer.add_key("q", "Quit")
+        footer.add_key("o", "Open question in browser")
+        footer.add_key("g", "Google search error")
         footer.add_key("←", "Previous question")
         footer.add_key("→", "Next question")
-        footer.add_key("s", "Toggle question list")
-        footer.add_key("d", "Open question in browser")
-        footer.add_key("f", "Google search error")
 
         await self.set_focus(self.body._page)
         await view.dock(header, edge="top")
