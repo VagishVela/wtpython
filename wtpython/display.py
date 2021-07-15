@@ -1,3 +1,4 @@
+import traceback
 import webbrowser
 from typing import Any, List, Union
 from urllib.parse import urlencode
@@ -17,11 +18,11 @@ from textual.widgets import Footer, Header, ScrollView
 from wtpython.backends.stackoverflow import StackOverflowQuestion
 from wtpython.settings import APP_NAME
 
-PARSED_TB: dict[str, Any] = {}
+RAISED_EXC: Exception = None
 SO_RESULTS: list[StackOverflowQuestion] = []
 
 
-def store_results_in_module(parsed_tb: dict[str, Any], so_results: list[StackOverflowQuestion]) -> None:
+def store_results_in_module(raised_exc: Exception, so_results: list[StackOverflowQuestion]) -> None:
     """Unfortunate hack since there is an error with passing values to Display.
 
     Display inherits App and somwhere in the App.__init__ flow, values are
@@ -30,9 +31,9 @@ def store_results_in_module(parsed_tb: dict[str, Any], so_results: list[StackOve
 
     These values are used in `Display.on_startup`
     """
-    global SO_RESULTS, PARSED_TB
+    global SO_RESULTS, RAISED_EXC
     SO_RESULTS = so_results
-    PARSED_TB = parsed_tb
+    RAISED_EXC = raised_exc
 
 
 class PythonCodeConverter(MarkdownConverter):
@@ -146,17 +147,16 @@ class Display(App):
 
     async def action_open_google(self) -> None:
         """Open the browser with google search results"""
-        if self.data["error_message"]:
-            params = {'q': f"python {self.data['error_message']}"}
-            url = 'https://www.google.com/search?' + urlencode(params)
-            webbrowser.open(url)
+        params = {'q': f"python {''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()}"}
+        url = 'https://www.google.com/search?' + urlencode(params)
+        webbrowser.open(url)
 
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
-        self.title = f"{APP_NAME} | {PARSED_TB['error_message']}"
+        self.title = f"{APP_NAME} | {''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()}"
         view = await self.push_view(DockView())
         self.index = 0
-        self.data = {'results': SO_RESULTS, **PARSED_TB}
+        self.data = {'results': SO_RESULTS}
         header = Header()
         footer = Footer()
         self.sidebar = Sidebar("sidebar", self.data["results"])

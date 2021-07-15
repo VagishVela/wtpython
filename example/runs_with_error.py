@@ -1,6 +1,9 @@
+import sys
 import time
 
 import requests
+
+print(sys.argv)
 
 for i in range(3):
     print(i)
