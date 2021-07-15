@@ -12,14 +12,6 @@ from wtpython.display import Display, store_results_in_module
 from wtpython.settings import MAX_SO_RESULTS
 
 
-def run_and_get_stderr(args: list[str]) -> str:
-    """Run the python script and return the stderr output"""
-    try:
-        runpy.run_path(args[0], run_name='__main__')
-    except Exception as exc:
-        return exc
-
-
 def parse_arguments() -> tuple[dict, list]:
     """Parse arguments and store them in wtpython.arguments.args"""
     parser = argparse.ArgumentParser()
@@ -28,7 +20,7 @@ def parse_arguments() -> tuple[dict, list]:
         "--no-display",
         action='store_true',
         default=False,
-        help="Run without display",
+        help="Run without display"
     )
     parser.add_argument(
         "-c",
@@ -48,9 +40,12 @@ def parse_arguments() -> tuple[dict, list]:
 def main() -> None:
     """Run the application"""
     flags, args = parse_arguments()
-    exc = run_and_get_stderr(args)
-    if exc is None:
-        return
+    exc = None
+
+    try:
+        runpy.run_path(args[0], run_name='__main__')
+    except Exception as e:
+        exc = e
 
     error = ''.join(traceback.format_exception_only(type(exc), exc)).strip()
     so = StackOverflowFinder()
