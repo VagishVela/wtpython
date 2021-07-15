@@ -46,17 +46,17 @@ def main() -> None:
         runpy.run_path(args[0], run_name='__main__')
     except Exception as e:
         exc = e
+        error = ''.join(traceback.format_exception_only(type(e), e)).strip()
 
-    error = ''.join(traceback.format_exception_only(type(exc), exc)).strip()
+    if flags["copy_error"]:
+        pyperclip.copy(error)
+
     so = StackOverflowFinder()
     try:
         so_results = so.search(error, MAX_SO_RESULTS)
     except SearchError as e:
         print(e)
         return
-
-    if flags["copy_error"]:
-        pyperclip.copy(error)
 
     if flags['no_display']:
         traceback.print_exception(type(exc), exc, exc.__traceback__)
