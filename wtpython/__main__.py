@@ -1,13 +1,29 @@
 import argparse
+import runpy
+import sys
+import traceback
 
 import pyperclip
 from rich import print
 
 from wtpython import SearchError
 from wtpython.backends.stackoverflow import StackOverflowFinder
-from wtpython.core import parse_traceback, run_and_get_stderr
 from wtpython.display import Display, store_results_in_module
 from wtpython.settings import MAX_SO_RESULTS
+
+
+def run(args: list[str]) -> Exception:
+    """Execute desired program."""
+    # Set sys.argv as the intended script would receive them
+    stashed, sys.argv = sys.argv, args
+    exc = None
+    try:
+        runpy.run_path(args[0], run_name='__main__')
+    except Exception as e:
+        exc = e
+    finally:
+        sys.argv = stashed
+    return exc
 
 
 def parse_arguments() -> tuple[dict, list]:
@@ -18,7 +34,7 @@ def parse_arguments() -> tuple[dict, list]:
         "--no-display",
         action='store_true',
         default=False,
-        help="Run without display",
+        help="Run without display"
     )
     parser.add_argument(
         "-c",
@@ -29,34 +45,35 @@ def parse_arguments() -> tuple[dict, list]:
     )
 
     flags, args = parser.parse_known_args()
+
     return vars(flags), args
 
 
 def main() -> None:
     """Run the application"""
     flags, args = parse_arguments()
-    tb = run_and_get_stderr(args)
-    if not tb:
+    exc = run(args)
+
+    if exc is None:
         return
 
-    parsed_tb = parse_traceback(tb)
+    error = ''.join(traceback.format_exception_only(type(exc), exc)).strip()
+
+    if flags["copy_error"]:
+        pyperclip.copy(error)
 
     so = StackOverflowFinder()
     try:
-        so_results = so.search(parsed_tb["error_message"], MAX_SO_RESULTS)
+        so_results = so.search(error, MAX_SO_RESULTS)
     except SearchError as e:
         print(e)
         return
 
-    store_results_in_module(parsed_tb, so_results)
-
-    if flags["copy_error"]:
-        pyperclip.copy(parsed_tb["error_message"])
-
     if flags['no_display']:
-        print(parsed_tb)
+        traceback.print_exception(type(exc), exc, exc.__traceback__)
         print(so_results)
     else:
+        store_results_in_module(exc, so_results)
         Display().run()
 
 
