@@ -1,4 +1,5 @@
 import argparse
+import runpy
 import sys
 import traceback
 
@@ -13,11 +14,8 @@ from wtpython.settings import MAX_SO_RESULTS
 
 def run_and_get_stderr(args: list[str]) -> str:
     """Run the python script and return the stderr output"""
-    with open(args[0]) as fh:
-        code = fh.read()
-
     try:
-        exec(code)  # noqa: S102
+        runpy.run_path(args[0], run_name='__main__')
     except Exception as exc:
         return exc
 
@@ -43,7 +41,7 @@ def parse_arguments() -> tuple[dict, list]:
     flags, args = parser.parse_known_args()
 
     # Set sys.argv as the intended script would receive them
-    sys.argv = args[1:]
+    sys.argv = ['python', *args[1:]]
     return vars(flags), args
 
 
