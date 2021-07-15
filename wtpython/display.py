@@ -169,7 +169,8 @@ class Display(App):
         footer.add_key("d", "Open in Browser")
         footer.add_key("f", "Search Google")
 
-        await self.set_focus(self.body._page)
+        await self.set_focus(self.body.page)
+
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar, edge="left", size=30)
