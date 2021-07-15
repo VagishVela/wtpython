@@ -147,13 +147,15 @@ class Display(App):
 
     async def action_open_google(self) -> None:
         """Open the browser with google search results"""
-        params = {'q': f"python {''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()}"}
+        exc_msg = ''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()
+        params = {'q': f"python {exc_msg}"}
         url = 'https://www.google.com/search?' + urlencode(params)
         webbrowser.open(url)
 
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
-        self.title = f"{APP_NAME} | {''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()}"
+        exc_msg = ''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()
+        self.title = f"{APP_NAME} | {exc_msg}"
         view = await self.push_view(DockView())
         self.index = 0
         self.data = {'results': SO_RESULTS}
