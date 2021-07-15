@@ -12,6 +12,20 @@ from wtpython.display import Display, store_results_in_module
 from wtpython.settings import MAX_SO_RESULTS
 
 
+def run(args: list[str]) -> Exception:
+    """Execute desired program."""
+    # Set sys.argv as the intended script would receive them
+    stashed, sys.argv = sys.argv, args
+    exc = None
+    try:
+        runpy.run_path(args[0], run_name='__main__')
+    except Exception as e:
+        exc = e
+    finally:
+        sys.argv = stashed
+    return exc
+
+
 def parse_arguments() -> tuple[dict, list]:
     """Parse arguments and store them in wtpython.arguments.args"""
     parser = argparse.ArgumentParser()
@@ -32,21 +46,18 @@ def parse_arguments() -> tuple[dict, list]:
 
     flags, args = parser.parse_known_args()
 
-    # Set sys.argv as the intended script would receive them
-    sys.argv = ['python', *args[1:]]
     return vars(flags), args
 
 
 def main() -> None:
     """Run the application"""
     flags, args = parse_arguments()
-    exc = None
+    exc = run(args)
 
-    try:
-        runpy.run_path(args[0], run_name='__main__')
-    except Exception as e:
-        exc = e
-        error = ''.join(traceback.format_exception_only(type(e), e)).strip()
+    if exc is None:
+        return
+
+    error = ''.join(traceback.format_exception_only(type(exc), exc)).strip()
 
     if flags["copy_error"]:
         pyperclip.copy(error)
