@@ -69,7 +69,7 @@ def main() -> None:
         print(e)
         return
 
-    traceback.print_exception(type(exc), exc, exc.__traceback__)
+    print(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
     if flags['no_display']:
         print(so_results)
     else:
