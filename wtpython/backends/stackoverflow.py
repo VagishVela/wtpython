@@ -83,7 +83,7 @@ class StackOverflowFinder:
 
         session.close()
 
-        return [StackOverflowQuestion(x[0], x[1]) for x in answers]
+        return [StackOverflowQuestion(*ans) for ans in answers]
 
 
 if __name__ == "__main__":
