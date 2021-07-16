@@ -78,8 +78,8 @@ def main() -> None:
         display_app_error(e)
         return
 
+    print(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
     if flags['no_display']:
-        traceback.print_exception(type(exc), exc, exc.__traceback__)
         print(so_results)
     else:
         store_results_in_module(exc, so_results)
