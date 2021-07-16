@@ -16,7 +16,7 @@ from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
 from wtpython.backends.stackoverflow import StackOverflowQuestion
-from wtpython.settings import APP_NAME
+from wtpython.settings import APP_NAME, GH_ISSUES
 
 RAISED_EXC: Exception = None
 SO_RESULTS: list[StackOverflowQuestion] = []
@@ -94,6 +94,7 @@ class Display(App):
 
         await self.bind("d", "open_browser")
         await self.bind("f", "open_google")
+        await self.bind("i", "report_issue")
 
         await self.bind("left", "prev_question")
         await self.bind("right", "next_question")
@@ -153,6 +154,10 @@ class Display(App):
         if SO_RESULTS != []:
             webbrowser.open(SO_RESULTS[self.index].link)
 
+    async def action_report_issue(self) -> None:
+        """Take user to submit new issue on Github."""
+        webbrowser.open(GH_ISSUES)
+
     async def action_open_google(self) -> None:
         """Open the browser with google search results"""
         exc_msg = ''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()
@@ -184,6 +189,7 @@ class Display(App):
         footer.add_key("s", "Toggle Question List")
         footer.add_key("d", "Open in Browser")
         footer.add_key("f", "Search Google")
+        footer.add_key("i", "Report Issue")
 
         await self.set_focus(self.body.page)
 
