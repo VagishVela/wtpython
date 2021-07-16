@@ -90,6 +90,7 @@ class Display(App):
         """Navigation setup for display"""
         await self.bind("q,ctrl+c", "quit")
         await self.bind("s", "view.toggle('sidebar')")
+        await self.bind("t", "show_traceback")
 
         await self.bind("d", "open_browser")
         await self.bind("f", "open_google")
@@ -103,14 +104,17 @@ class Display(App):
 
     def create_body_text(self) -> RenderableType:
         """Return the text to display in the ScrollView"""
-        if self.data['results'] == []:
+        converter = PythonCodeConverter()
+
+        if self.viewing_traceback is True:
+            return "\n".join(traceback.format_exception(type(RAISED_EXC), RAISED_EXC, RAISED_EXC.__traceback__))
+        if SO_RESULTS == []:
             return "Could not find any results. Sorry!"
 
         # For now assume first question... but ideally user should be able to pick
         # the question from the sidebar
 
-        converter = PythonCodeConverter()
-        question: StackOverflowQuestion = self.data['results'][self.index]
+        question: StackOverflowQuestion = SO_RESULTS[self.index]
         text = ""
         text += f'Question #{self.index + 1} - {question.title}\n\n'
         text += f'{converter.convert(question.body)}\n'
@@ -122,28 +126,30 @@ class Display(App):
         output = Markdown(text, inline_code_lexer="python")
         return output
 
+    async def update_body(self) -> None:
+        """Update the body"""
+        await self.body.update(self.create_body_text())
+        self.body.y = 0
+        self.body.target_y = 0
+
     async def action_next_question(self) -> None:
         """Go to the next question"""
-        if len(self.data["results"]) > self.index + 1:
+        if len(SO_RESULTS) > self.index + 1 and self.viewing_traceback:
             self.index += 1
-            await self.body.update(self.create_body_text())
-            self.body.y = 0
-            self.body.target_y = 0
+            await self.update_body()
             self.sidebar.set_index(self.index)
 
     async def action_prev_question(self) -> None:
         """Go to the previous question"""
-        if self.index != 0:
+        if self.index != 0 and self.viewing_traceback:
             self.index -= 1
-            await self.body.update(self.create_body_text())
-            self.body.y = 0
-            self.body.target_y = 0
+            await self.update_body()
             self.sidebar.set_index(self.index)
 
     async def action_open_browser(self) -> None:
         """Open the question in the browser"""
-        if self.data["results"] != []:
-            webbrowser.open(self.data["results"][self.index].link)
+        if SO_RESULTS != []:
+            webbrowser.open(SO_RESULTS[self.index].link)
 
     async def action_open_google(self) -> None:
         """Open the browser with google search results"""
@@ -152,21 +158,27 @@ class Display(App):
         url = 'https://www.google.com/search?' + urlencode(params)
         webbrowser.open(url)
 
+    async def action_show_traceback(self) -> None:
+        """Show the traceback"""
+        self.viewing_traceback = not self.viewing_traceback
+        await self.update_body()
+
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
         exc_msg = ''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()
         self.title = f"{APP_NAME} | {exc_msg}"
         view = await self.push_view(DockView())
         self.index = 0
-        self.data = {'results': SO_RESULTS}
+        self.viewing_traceback = False
         header = Header()
         footer = Footer()
-        self.sidebar = Sidebar("sidebar", self.data["results"])
+        self.sidebar = Sidebar("sidebar", SO_RESULTS)
         self.body = ScrollView(self.create_body_text())
 
         footer.add_key("q", "Quit")
         footer.add_key("←", "Previous Question")
         footer.add_key("→", "Next Question")
+        footer.add_key("t", "Toggle Traceback")
         footer.add_key("s", "Toggle Question List")
         footer.add_key("d", "Open in Browser")
         footer.add_key("f", "Search Google")
