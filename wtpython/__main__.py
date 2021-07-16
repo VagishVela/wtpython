@@ -25,6 +25,8 @@ def trim_exception_traceback(tb: traceback) -> traceback:
     frames from the beginning of the traceback until we stop seeing `runpy`.
     """
     seen_runpy = False
+    collecting = False
+
     frames = []
     while tb is not None:
         cur = tb.tb_frame
@@ -33,6 +35,9 @@ def trim_exception_traceback(tb: traceback) -> traceback:
         if "runpy" in filename:
             seen_runpy = True
         elif seen_runpy:
+            collecting = True
+        
+        if collecting:
             frames.append(cur)
 
         tb = tb.tb_next
