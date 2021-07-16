@@ -106,8 +106,8 @@ class Display(App):
         """Return the text to display in the ScrollView"""
         converter = PythonCodeConverter()
 
-        if self.viewing_traceback is True:
-            return "\n".join(traceback.format_exception(type(RAISED_EXC), RAISED_EXC, RAISED_EXC.__traceback__))
+        if self.viewing_traceback:
+            return "".join(traceback.format_exception(type(RAISED_EXC), RAISED_EXC, RAISED_EXC.__traceback__))
         if SO_RESULTS == []:
             return "Could not find any results. Sorry!"
 
@@ -134,14 +134,16 @@ class Display(App):
 
     async def action_next_question(self) -> None:
         """Go to the next question"""
-        if len(SO_RESULTS) > self.index + 1 and self.viewing_traceback:
+        if len(SO_RESULTS) > self.index + 1:
+            self.viewing_traceback = False
             self.index += 1
             await self.update_body()
             self.sidebar.set_index(self.index)
 
     async def action_prev_question(self) -> None:
         """Go to the previous question"""
-        if self.index != 0 and self.viewing_traceback:
+        if self.index != 0:
+            self.viewing_traceback = False
             self.index -= 1
             await self.update_body()
             self.sidebar.set_index(self.index)
