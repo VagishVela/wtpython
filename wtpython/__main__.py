@@ -36,7 +36,7 @@ def trim_exception_traceback(tb: traceback) -> traceback:
             seen_runpy = True
         elif seen_runpy:
             collecting = True
-        
+
         if collecting:
             frames.append(cur)
 
@@ -55,7 +55,7 @@ def run(args: list[str]) -> Exception:
     stashed, sys.argv = sys.argv, args
     exc = None
     try:
-        runpy.run_path(args[0], run_name='__main__')
+        runpy.run_path(args[0], run_name="__main__")
     except Exception as e:
         exc = e
     finally:
@@ -70,7 +70,9 @@ def display_app_error(exc: Exception) -> None:
     print("-" * 80)
     traceback.print_exception(type(exc), exc, exc.__traceback__)
     print("-" * 80)
-    print(f":nerd_face: [bold][green]Please let us know by by opening a new issue at:[/] [blue underline]{GH_ISSUES}")
+    print(
+        f":nerd_face: [bold][green]Please let us know by by opening a new issue at:[/] [blue underline]{GH_ISSUES}"
+    )
 
 
 def parse_arguments() -> tuple[dict, list]:
@@ -79,14 +81,14 @@ def parse_arguments() -> tuple[dict, list]:
     parser.add_argument(
         "-n",
         "--no-display",
-        action='store_true',
+        action="store_true",
         default=False,
-        help="Run without display"
+        help="Run without display",
     )
     parser.add_argument(
         "-c",
         "--copy-error",
-        action='store_true',
+        action="store_true",
         default=False,
         help="Copy error to clipboard",
     )
@@ -104,8 +106,8 @@ def main() -> None:
     if exc is None:
         return
 
-    error = ''.join(traceback.format_exception_only(type(exc), exc)).strip()
-    error_lines = error.split('\n')
+    error = "".join(traceback.format_exception_only(type(exc), exc)).strip()
+    error_lines = error.split("\n")
     if len(error_lines) > 1:
         error = error_lines[-1]
 
@@ -120,10 +122,14 @@ def main() -> None:
         return
 
     print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
-    if flags['no_display']:
+    if flags["no_display"]:
         print(HorizontalRule())
         print("[yellow]Stack Overflow Results:[/]\n")
-        print("\n\n".join([str(i + 1) + ". " + str(result) for i, result in enumerate(so_results)]))
+        print(
+            "\n\n".join(
+                [str(i + 1) + ". " + str(result) for i, result in enumerate(so_results)]
+            )
+        )
     else:
         store_results_in_module(exc, so_results)
         try:
