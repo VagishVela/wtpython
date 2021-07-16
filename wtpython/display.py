@@ -9,6 +9,7 @@ from rich.align import Align
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
+from rich.traceback import Traceback
 from textual import events
 from textual.app import App
 from textual.views import DockView
@@ -110,10 +111,10 @@ class Display(App):
         converter = PythonCodeConverter()
 
         if self.viewing_traceback:
-            return "".join(
-                traceback.format_exception(
-                    type(RAISED_EXC), RAISED_EXC, RAISED_EXC.__traceback__
-                )
+            return Traceback.from_exception(
+                type(RAISED_EXC),
+                RAISED_EXC,
+                RAISED_EXC.__traceback__,
             )
         if SO_RESULTS == []:
             return "Could not find any results. Sorry!"
