@@ -1,3 +1,4 @@
+import html
 from typing import List
 
 from requests_cache import CachedSession
@@ -27,13 +28,14 @@ class StackOverflowQuestion:
         self.raw_json: dict = question_json
         self.question_id: int = question_json["question_id"]
         self.link: str = question_json["link"]
-        self.title: str = question_json["title"]
+        self.title: str = html.unescape(question_json["title"])
         self.score: int = question_json["score"]
         self.body: str = question_json["body"]
         self.answers: List[StackOverflowAnswer] = [StackOverflowAnswer(x) for x in answer_json["items"]]
+        self.answers.sort(key=lambda x: (x.is_accepted, x.score), reverse=True)
 
     def __str__(self):
-        return f"{self.title}: {self.link}"
+        return f"{self.title}\n{self.link}"
 
 
 class StackOverflowFinder:
@@ -83,7 +85,7 @@ class StackOverflowFinder:
 
         session.close()
 
-        return [StackOverflowQuestion(x[0], x[1]) for x in answers]
+        return [StackOverflowQuestion(*ans) for ans in answers]
 
 
 if __name__ == "__main__":

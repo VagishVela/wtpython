@@ -130,8 +130,10 @@ class Display(App):
         text += f"{converter.convert(question.body)}\n"
         for number, answer in enumerate(question.answers):
             text += (
-                f"---\n### Answer #{number + 1} | {question.score} vote{'s' if answer.score != 1 else ''}\n---\n "
-                f"{' | Accepted' if answer.is_accepted else ''}"
+                f"---\n### Answer #{number + 1} | "
+                f"{answer.score} vote{'s' if answer.score != 1 else ''}"
+                f"{' | [Accepted]' if answer.is_accepted else ''}"
+                f"\n---\n "
             )
             text += converter.convert(answer.body)
             text += "\n"
