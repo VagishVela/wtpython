@@ -33,12 +33,11 @@ In this case, simply replace `python` with `wtpython` and you will see the error
 
 ```
 $ wtpython example/runs_with_error.py
-0
-1
-2
-Error Message: requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?
-Packages: requests
 ```
+
+This will bring up something like below, the color scheme might be different based off how your terminal is setup.
+
+![wtpython TUI](docs/_images/demo.png)
 
 ## Development Tools
 
