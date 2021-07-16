@@ -28,7 +28,7 @@ def run(args: list[str]) -> Exception:
 
 def display_app_error(exc: Exception) -> None:
     """Display error message and request user to report an issue."""
-    print(":cry: [red]We're terribly sorry, but our app has encounterd an issue.")
+    print(":cry: [red]We're terribly sorry, but our app has encountered an issue.")
     print("-" * 80)
     traceback.print_exception(type(exc), exc, exc.__traceback__)
     print("-" * 80)
