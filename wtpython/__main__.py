@@ -2,7 +2,6 @@ import argparse
 import runpy
 import sys
 import traceback
-import types
 
 import pyperclip
 from rich import print
@@ -25,28 +24,16 @@ def trim_exception_traceback(tb: traceback) -> traceback:
     frames from the beginning of the traceback until we stop seeing `runpy`.
     """
     seen_runpy = False
-    collecting = False
-
-    frames = []
     while tb is not None:
         cur = tb.tb_frame
         filename = cur.f_code.co_filename
-
         if "runpy" in filename:
             seen_runpy = True
-        elif seen_runpy:
-            collecting = True
-
-        if collecting:
-            frames.append(cur)
-
+        elif seen_runpy and "runpy" not in filename:
+            break
         tb = tb.tb_next
 
-    new_tb = None
-    for frame in reversed(frames):
-        new_tb = types.TracebackType(new_tb, frame, frame.f_lasti, frame.f_lineno)
-
-    return new_tb
+    return tb
 
 
 def run(args: list[str]) -> Exception:
