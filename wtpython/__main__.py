@@ -2,14 +2,46 @@ import argparse
 import runpy
 import sys
 import traceback
+import types
 
 import pyperclip
 from rich import print
+from rich.markdown import HorizontalRule
+from rich.traceback import Traceback
 
 from wtpython import SearchError
 from wtpython.backends.stackoverflow import StackOverflowFinder
 from wtpython.display import Display, store_results_in_module
 from wtpython.settings import GH_ISSUES, MAX_SO_RESULTS
+
+
+def trim_exception_traceback(tb: traceback) -> traceback:
+    """
+    Trim the traceback to remove extra frames
+
+    Because of the way we are currently running the code, any traceback
+    created during the execution of the application will be include the
+    stack frames of this application. This function removes all the stack
+    frames from the beginning of the traceback until we stop seeing `runpy`.
+    """
+    seen_runpy = False
+    frames = []
+    while tb is not None:
+        cur = tb.tb_frame
+        filename = cur.f_code.co_filename
+
+        if "runpy" in filename:
+            seen_runpy = True
+        elif seen_runpy:
+            frames.append(cur)
+
+        tb = tb.tb_next
+
+    new_tb = None
+    for frame in reversed(frames):
+        new_tb = types.TracebackType(new_tb, frame, frame.f_lasti, frame.f_lineno)
+
+    return new_tb
 
 
 def run(args: list[str]) -> Exception:
@@ -23,6 +55,7 @@ def run(args: list[str]) -> Exception:
         exc = e
     finally:
         sys.argv = stashed
+    exc.__traceback__ = trim_exception_traceback(exc.__traceback__)
     return exc
 
 
@@ -67,6 +100,9 @@ def main() -> None:
         return
 
     error = ''.join(traceback.format_exception_only(type(exc), exc)).strip()
+    error_lines = error.split('\n')
+    if len(error_lines) > 1:
+        error = error_lines[-1]
 
     if flags["copy_error"]:
         pyperclip.copy(error)
@@ -78,9 +114,10 @@ def main() -> None:
         display_app_error(e)
         return
 
-    print(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
+    print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
     if flags['no_display']:
-        print("[yellow]Stack Overflow Results[/]")
+        print(HorizontalRule())
+        print("[yellow]Stack Overflow Results:[/]\n")
         print("\n\n".join([str(i + 1) + ". " + str(result) for i, result in enumerate(so_results)]))
     else:
         store_results_in_module(exc, so_results)
