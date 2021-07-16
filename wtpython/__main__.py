@@ -28,11 +28,11 @@ def run(args: list[str]) -> Exception:
 
 def display_app_error(exc: Exception) -> None:
     """Display error message and request user to report an issue."""
-    print(":cry: We're terribly sorry, but our app has encounterd an issue.")
+    print(":cry: [red]We're terribly sorry, but our app has encounterd an issue.")
     print("-" * 80)
     traceback.print_exception(type(exc), exc, exc.__traceback__)
     print("-" * 80)
-    print(f":nerd_face: Please let us know by by opening a new issue at {GH_ISSUES}")
+    print(f":nerd_face: [bold][green]Please let us know by by opening a new issue at:[/] [blue underline]{GH_ISSUES}")
 
 
 def parse_arguments() -> tuple[dict, list]:
