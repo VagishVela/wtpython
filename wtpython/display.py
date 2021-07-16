@@ -101,7 +101,7 @@ class Display(App):
 
         # Vim shortcuts...
         await self.bind("k", "prev_question")
-        await self.bind("l", "next_question")
+        await self.bind("j", "next_question")
 
     def create_body_text(self) -> RenderableType:
         """Return the text to display in the ScrollView"""
