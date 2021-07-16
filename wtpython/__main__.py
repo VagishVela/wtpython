@@ -80,7 +80,8 @@ def main() -> None:
 
     print(''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)))
     if flags['no_display']:
-        print(so_results)
+        print("[yellow]Stack Overflow Results[/]")
+        print("\n\n".join([str(i + 1) + ". " + str(result) for i, result in enumerate(so_results)]))
     else:
         store_results_in_module(exc, so_results)
         try:
