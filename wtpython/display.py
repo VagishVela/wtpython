@@ -116,10 +116,11 @@ class Display(App):
 
         question: StackOverflowQuestion = SO_RESULTS[self.index]
         text = ""
-        text += f'Question #{self.index + 1} - {question.title}\n\n'
+        text += f"# {question.title} | {question.score} vote{'s' if question.score != 1 else ''}\n"
         text += f'{converter.convert(question.body)}\n'
         for number, answer in enumerate(question.answers):
-            text += f"---\n### Answer {number + 1}\n---\n"
+            text += (f"---\n### Answer #{number + 1} | {question.score} vote{'s' if answer.score != 1 else ''}\n---\n "
+                     f"{' | Accepted' if answer.is_accepted else ''}")
             text += converter.convert(answer.body)
             text += "\n"
 
