@@ -9,6 +9,7 @@ from rich.align import Align
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
+from rich.traceback import Traceback
 from textual import events
 from textual.app import App
 from textual.views import DockView
@@ -22,7 +23,9 @@ RAISED_EXC: Exception = None
 SO_RESULTS: list[StackOverflowQuestion] = []
 
 
-def store_results_in_module(raised_exc: Exception, so_results: list[StackOverflowQuestion]) -> None:
+def store_results_in_module(
+    raised_exc: Exception, so_results: list[StackOverflowQuestion]
+) -> None:
     """Unfortunate hack since there is an error with passing values to Display.
 
     Display inherits App and somwhere in the App.__init__ flow, values are
@@ -42,8 +45,8 @@ class PythonCodeConverter(MarkdownConverter):
     def convert_pre(self, el: Any, text: str, convert_as_inline: bool) -> str:
         """Convert the <pre> tag into a code blocked marked with py"""
         if not text:
-            return ''
-        return '\n```py\n%s\n```\n' % text
+            return ""
+        return "\n```py\n%s\n```\n" % text
 
 
 class Sidebar(Widget):
@@ -55,7 +58,9 @@ class Sidebar(Widget):
         """Set the current question index"""
         self.index = index
 
-    def __init__(self, name: Union[str, None], questions: List[StackOverflowQuestion] = None) -> None:
+    def __init__(
+        self, name: Union[str, None], questions: List[StackOverflowQuestion] = None
+    ) -> None:
         if questions is not None:
             self.questions = questions
         super().__init__(name=name)
@@ -74,9 +79,7 @@ class Sidebar(Widget):
     def render(self) -> RenderableType:
         """Render the panel"""
         return Panel(
-            Align.center(
-                self.get_questions(), vertical="top"
-            ),
+            Align.center(self.get_questions(), vertical="top"),
             title="Questions",
             border_style="blue",
             box=box.ROUNDED,
@@ -108,7 +111,11 @@ class Display(App):
         converter = PythonCodeConverter()
 
         if self.viewing_traceback:
-            return "".join(traceback.format_exception(type(RAISED_EXC), RAISED_EXC, RAISED_EXC.__traceback__))
+            return Traceback.from_exception(
+                type(RAISED_EXC),
+                RAISED_EXC,
+                RAISED_EXC.__traceback__,
+            )
         if SO_RESULTS == []:
             return "Could not find any results. Sorry!"
 
@@ -118,10 +125,12 @@ class Display(App):
         question: StackOverflowQuestion = SO_RESULTS[self.index]
         text = ""
         text += f"# {question.title} | {question.score} vote{'s' if question.score != 1 else ''}\n"
-        text += f'{converter.convert(question.body)}\n'
+        text += f"{converter.convert(question.body)}\n"
         for number, answer in enumerate(question.answers):
-            text += (f"---\n### Answer #{number + 1} | {question.score} vote{'s' if answer.score != 1 else ''}\n---\n "
-                     f"{' | Accepted' if answer.is_accepted else ''}")
+            text += (
+                f"---\n### Answer #{number + 1} | {question.score} vote{'s' if answer.score != 1 else ''}\n---\n "
+                f"{' | Accepted' if answer.is_accepted else ''}"
+            )
             text += converter.convert(answer.body)
             text += "\n"
 
@@ -161,9 +170,11 @@ class Display(App):
 
     async def action_open_google(self) -> None:
         """Open the browser with google search results"""
-        exc_msg = ''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()
-        params = {'q': f"python {exc_msg}"}
-        url = 'https://www.google.com/search?' + urlencode(params)
+        exc_msg = "".join(
+            traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
+        ).strip()
+        params = {"q": f"python {exc_msg}"}
+        url = "https://www.google.com/search?" + urlencode(params)
         webbrowser.open(url)
 
     async def action_show_traceback(self) -> None:
@@ -173,7 +184,9 @@ class Display(App):
 
     async def on_startup(self, event: events.Startup) -> None:
         """App layout"""
-        exc_msg = ''.join(traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)).strip()
+        exc_msg = "".join(
+            traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
+        ).strip()
         self.title = f"{APP_NAME} | {exc_msg}"
         view = await self.push_view(DockView())
         self.index = 0
