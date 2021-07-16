@@ -17,6 +17,9 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+**Traceback**
+If possible, paste your traceback here
+
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
