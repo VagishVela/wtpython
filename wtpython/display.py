@@ -47,11 +47,7 @@ class PythonCodeConverter(MarkdownConverter):
         """Add python syntax to all <pre> elements."""
         if not text:
             return ""
-        return """
-        ```python
-        {text}
-        ```
-        """
+        return "\n```py\n%s\n```\n" % text
 
 
 class Sidebar(Widget):
