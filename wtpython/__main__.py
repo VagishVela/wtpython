@@ -131,6 +131,9 @@ def main() -> None:
 
     try:
         so_results = so.search(error, SO_MAX_RESULTS)
+        if len(so_results) == 0:
+            # If no results have been found, search the error class name.
+            so_results = so.search(error.split(" ")[0].strip(":"), SO_MAX_RESULTS)
     except SearchError as e:
         display_app_error(e)
         return
