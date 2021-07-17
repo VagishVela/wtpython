@@ -9,9 +9,9 @@ from rich.markdown import HorizontalRule
 from rich.traceback import Traceback
 
 from wtpython import SearchError
-from wtpython.backends.stackoverflow import StackOverflowFinder
 from wtpython.display import Display, store_results_in_module
 from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
+from wtpython.stackoverflow import StackOverflowFinder
 
 
 def trim_exception_traceback(tb: traceback) -> traceback:

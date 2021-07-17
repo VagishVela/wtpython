@@ -17,8 +17,8 @@ from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
-from wtpython.backends.stackoverflow import StackOverflowQuestion
 from wtpython.settings import APP_NAME, GH_ISSUES
+from wtpython.stackoverflow import StackOverflowQuestion
 
 RAISED_EXC: Exception = None
 SO_RESULTS: list[StackOverflowQuestion] = []
