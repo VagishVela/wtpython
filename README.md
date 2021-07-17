@@ -2,9 +2,17 @@
 
 Helping you find answers to the errors Python spits out.
 
+## Installation
+
+You can find the source code on GitHub at: https://github.com/what-the-python/wtpython
+
+To install directly please run:
+```
+pip install wtpython
+```
 ## Usage
 
-When you are running a python script, you might eveutally come across an error like so.
+When you are running a python script, you might eventually come across an error like so.
 
 ```
 $ python example/runs_with_error.py
@@ -47,8 +55,9 @@ This will bring up something like below, the color scheme might be different bas
 - [pre-commit](https://pre-commit.com/) will run a few tests before you can commit your code. Don't worry, it will make the changes for you. Worst case, you'll have to type the `git add/commit` lines twice.
 
 
-## Set up the project
+## Contribution instructions
 
+To setup the system for development please fork the repository and do the below before submitting a pull request.
 ### Create and activate a virtual environment
 ```
 python -m venv .venv --prompt template
@@ -75,7 +84,7 @@ The `.pre-commit-config.yaml` file is configured to perform the following tasks 
 - Validate yaml files
 - Validate toml files
 - Ensure a single new line on each file
-- Ensure trailing whitespaces are removed
+- Ensure trailing white spaces are removed
 - Format your code with black
 - Ensure your python imports are sorted consistently
 
