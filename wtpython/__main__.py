@@ -53,7 +53,7 @@ def parse_arguments() -> tuple[dict, list]:
         help="Copy error to clipboard",
     )
 
-    if len(sys.argv)==1:
+    if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit(1)
 
