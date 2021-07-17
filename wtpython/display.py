@@ -73,10 +73,9 @@ class Sidebar(Widget):
         text = ""
         for i, question in enumerate(self.questions):
             title = html.unescape(question.title)
-            if i == self.index:
-                text += f"[yellow]#{i + 1} - {title}[/]\n\n"
-            else:
-                text += f"[white]#{i + 1} - {title}[/]\n\n"
+            color = 'yellow' if i == self.index else 'white'
+            accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
+            text += f"[{color}]#{i + 1} [bold]Score: {question.score}[/]{accepted} - {title}[/]\n\n"
 
         return text
 
@@ -212,6 +211,6 @@ class Display(App):
 
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
-        await view.dock(self.sidebar, edge="left", size=30)
+        await view.dock(self.sidebar, edge="left", size=35)
         await view.dock(self.body, edge="right")
         self.require_layout()
