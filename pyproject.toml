@@ -4,10 +4,19 @@ build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
 module = "wtpython"
-author = "Perceptive Porcupines"
+author = "what-the-python team"
 author-email = "email@example.com"
 home-page = "https://github.com/what-the-python/wtpython"
-classifiers = [ "License :: OSI Approved :: MIT License",]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
 description-file = "README.md"
 requires-python=">=3.9"
 requires=[
