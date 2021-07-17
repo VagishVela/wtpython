@@ -64,7 +64,15 @@ def display_app_error(exc: Exception) -> None:
 
 def parse_arguments() -> tuple[dict, list]:
     """Parse arguments and store them in wtpython.arguments.args"""
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        epilog=("""
+            wtpython acts as a substitute for python.
+            simply add `wt` to the beginning of the line and call your program with all the appropriate arguments.
+            (`wtpython your_script.py`)
+            wtpython flags should be located before your_script.py.
+        """),
+    )
+
     parser.add_argument(
         "-n",
         "--no-display",
