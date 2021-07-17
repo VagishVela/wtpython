@@ -6,8 +6,10 @@ from requests_cache.backends import FileCache
 from rich import print
 
 from wtpython import SearchError
-from wtpython.backends import REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION
-from wtpython.settings import SO_API, SO_FILTER, SO_MAX_RESULTS
+from wtpython.settings import (
+    REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION, SO_API, SO_FILTER,
+    SO_MAX_RESULTS
+)
 
 
 class StackOverflowAnswer:
