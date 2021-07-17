@@ -1,6 +1,6 @@
 import argparse
-import runpy
 import os.path
+import runpy
 import sys
 import textwrap
 import traceback
@@ -103,7 +103,7 @@ def parse_arguments() -> dict:
         help="Arguments normally passed to python",
     )
 
-    opts = vars(parser.parse_args())\
+    opts = vars(parser.parse_args())
 
     if not opts['args']:
         print("You must specify a script")
