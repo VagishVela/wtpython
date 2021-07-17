@@ -89,6 +89,12 @@ def parse_arguments() -> tuple[dict, list]:
         default=False,
         help="Copy error to clipboard",
     )
+    parser.add_argument(
+        "--clear-cache",
+        action="store_true",
+        default=False,
+        help="Clear StackOverflow cache",
+    )
 
     flags, args = parser.parse_known_args()
     if not args:
@@ -114,7 +120,8 @@ def main() -> None:
     if flags["copy_error"]:
         pyperclip.copy(error)
 
-    so = StackOverflowFinder()
+    so = StackOverflowFinder(clear_cache=flags["clear_cache"])
+
     try:
         so_results = so.search(error, MAX_SO_RESULTS)
     except SearchError as e:

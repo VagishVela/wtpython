@@ -41,6 +41,9 @@ class StackOverflowQuestion:
 class StackOverflowFinder:
     """Get results from Stack Overflow"""
 
+    def __init__(self, clear_cache: bool = False):
+        self.clear_cache = clear_cache
+
     def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
         """Search Stack Overflow with the initialized SE API object"""
         # Initialize the cache for the HTTP requests, and the session
@@ -49,6 +52,8 @@ class StackOverflowFinder:
             backend=FileCache(REQUEST_CACHE_LOCATION),
             expire_after=REQUEST_CACHE_DURATION,
         )
+        if self.clear_cache:
+            session.cache.clear()
 
         result = session.get(
             "https://api.stackexchange.com/2.3/search",
