@@ -3,6 +3,7 @@ import runpy
 import sys
 import textwrap
 import traceback
+from pathlib import Path
 
 import pyperclip
 from rich import print
@@ -27,10 +28,10 @@ def trim_exception_traceback(tb: traceback) -> traceback:
     seen_runpy = False
     while tb is not None:
         cur = tb.tb_frame
-        filename = cur.f_code.co_filename
-        if "runpy" in filename:
+        filename = Path(cur.f_code.co_filename).name
+        if filename == "runpy.py":
             seen_runpy = True
-        elif seen_runpy and "runpy" not in filename:
+        elif seen_runpy and filename != "runpy.py":
             break
         tb = tb.tb_next
 
