@@ -1,5 +1,6 @@
 import argparse
 import runpy
+import os.path
 import sys
 import textwrap
 import traceback
@@ -71,7 +72,7 @@ def display_app_error(exc: Exception) -> None:
     )
 
 
-def parse_arguments() -> tuple[dict, list]:
+def parse_arguments() -> dict:
     """Parse arguments and store them in wtpython.arguments.args"""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -96,19 +97,31 @@ def parse_arguments() -> tuple[dict, list]:
         default=False,
         help="Copy error to clipboard",
     )
+    parser.add_argument(
+        "args",
+        nargs="+",
+        help="Arguments normally passed to python",
+    )
 
-    flags, args = parser.parse_known_args()
-    if not args:
+    opts = vars(parser.parse_args())\
+
+    if not opts['args']:
+        print("You must specify a script")
         parser.print_help(sys.stderr)
         sys.exit(1)
 
-    return vars(flags), args
+    if not os.path.isfile(opts['args'][0]):
+        parser.print_help(sys.stderr)
+        print(HorizontalRule())
+        raise FileNotFoundError(f"Could not find {opts['args'][0]}")
+
+    return opts
 
 
 def main() -> None:
     """Run the application."""
-    flags, args = parse_arguments()
-    exc = run(args)
+    opts = parse_arguments()
+    exc = run(opts['args'])
 
     if exc is None:  # No exceptions were raised by user's program
         return
@@ -118,7 +131,7 @@ def main() -> None:
     if len(error_lines) > 1:
         error = error_lines[-1]
 
-    if flags["copy_error"]:
+    if opts["copy_error"]:
         pyperclip.copy(error)
 
     so = StackOverflowFinder()
@@ -129,7 +142,7 @@ def main() -> None:
         return
 
     print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
-    if flags["no_display"]:
+    if opts["no_display"]:
         print(HorizontalRule())
         print("[yellow]Stack Overflow Results:[/]\n")
         print("\n\n".join([
