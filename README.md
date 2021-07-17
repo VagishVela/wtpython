@@ -91,3 +91,9 @@ The `.pre-commit-config.yaml` file is configured to perform the following tasks 
 ```
 pre-commit install
 ```
+
+## FAQ
+
+1. How do I clear all of the cached results?
+
+You can clear the cache by using the `--clear-cache` param for the query or run delete the `~/.wtpython_cache`.
