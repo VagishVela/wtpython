@@ -80,11 +80,11 @@ def parse_arguments() -> tuple[dict, list]:
         help="Copy error to clipboard",
     )
 
-    if len(sys.argv) == 1:
+    flags, args = parser.parse_known_args()
+    if not args:
         parser.print_help(sys.stderr)
         sys.exit(1)
 
-    flags, args = parser.parse_known_args()
     return vars(flags), args
 
 
