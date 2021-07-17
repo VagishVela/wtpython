@@ -1,6 +1,7 @@
 import argparse
 import runpy
 import sys
+import textwrap
 import traceback
 
 import pyperclip
@@ -65,12 +66,12 @@ def display_app_error(exc: Exception) -> None:
 def parse_arguments() -> tuple[dict, list]:
     """Parse arguments and store them in wtpython.arguments.args"""
     parser = argparse.ArgumentParser(
-        epilog=("""
-            wtpython acts as a substitute for python.
-            simply add `wt` to the beginning of the line and call your program with all the appropriate arguments.
-            (`wtpython your_script.py`)
-            wtpython flags should be located before your_script.py.
-        """),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent("""
+        additional information:
+          wtpython acts as a substitute for python. Simply add `wt` to the beginning
+          of the line and call your program with all the appropriate arguments:
+                    $ wtpython [OPTIONS] <script.py> <arguments>"""),
     )
 
     parser.add_argument(
