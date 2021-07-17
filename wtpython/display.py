@@ -134,7 +134,7 @@ class Display(App):
         for i, answer in enumerate(question.answers, 1):
             text += (
                 f"---\n### Answer #{i} | Score: {answer.score}"
-                f"{' | [Accepted]' if answer.is_accepted else ''}"
+                f"{' ✔️' if answer.is_accepted else ''}"
                 "\n---\n "
             )
             text += converter.convert(answer.body)
