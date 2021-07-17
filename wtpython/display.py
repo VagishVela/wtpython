@@ -17,8 +17,8 @@ from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
-from wtpython.backends.stackoverflow import StackOverflowQuestion
 from wtpython.settings import APP_NAME, GH_ISSUES
+from wtpython.stackoverflow import StackOverflowQuestion
 
 RAISED_EXC: Exception = None
 SO_RESULTS: list[StackOverflowQuestion] = []
@@ -41,45 +41,47 @@ def store_results_in_module(
 
 
 class PythonCodeConverter(MarkdownConverter):
-    """Create a custom MarkdownConverter that adds adds python syntax highlighting."""
+    """Custom MarkdownConverter to add python syntax highlighting."""
 
     def convert_pre(self, el: Any, text: str, convert_as_inline: bool) -> str:
-        """Convert the <pre> tag into a code blocked marked with py"""
+        """Add python syntax to all <pre> elements."""
         if not text:
             return ""
         return "\n```py\n%s\n```\n" % text
 
 
 class Sidebar(Widget):
-    """Sidebar with list of questions and possible answers"""
+    """Sidebar widget to display list of questions."""
 
     index: Reactive[int] = Reactive(0)
 
     def set_index(self, index: int) -> None:
-        """Set the current question index"""
+        """Set the current question index."""
         self.index = index
 
     def __init__(
-        self, name: Union[str, None], questions: List[StackOverflowQuestion] = None
+        self,
+        name: Union[str, None],
+        questions: List[StackOverflowQuestion] = None,
     ) -> None:
         if questions is not None:
             self.questions = questions
         super().__init__(name=name)
 
     def get_questions(self) -> str:
-        """Put questions into legible format"""
+        """Format question list."""
         text = ""
         for i, question in enumerate(self.questions):
             title = html.unescape(question.title)
             if i == self.index:
-                text += f"[yellow]#{i + 1} - {title}[/yellow]\n\n"
+                text += f"[yellow]#{i + 1} - {title}[/]\n\n"
             else:
-                text += f"[white]#{i + 1} - {title}[/white]\n\n"
+                text += f"[white]#{i + 1} - {title}[/]\n\n"
 
         return text
 
     def render(self) -> RenderableType:
-        """Render the panel"""
+        """Render the panel."""
         return Panel(
             Align.center(self.get_questions(), vertical="top"),
             title="Questions",
@@ -89,10 +91,10 @@ class Sidebar(Widget):
 
 
 class Display(App):
-    """An example of a very simple Textual App"""
+    """WTPython application."""
 
     async def on_load(self, event: events.Load) -> None:
-        """Navigation setup for display"""
+        """Key bindings."""
         await self.bind("q,ctrl+c", "quit")
         await self.bind("s", "view.toggle('sidebar')")
         await self.bind("t", "show_traceback")
@@ -109,7 +111,7 @@ class Display(App):
         await self.bind("j", "next_question")
 
     def create_body_text(self) -> RenderableType:
-        """Return the text to display in the ScrollView"""
+        """Generate the text to display in the ScrollView."""
         converter = PythonCodeConverter()
 
         if self.viewing_traceback:
@@ -121,19 +123,15 @@ class Display(App):
         if SO_RESULTS == []:
             return "Could not find any results. Sorry!"
 
-        # For now assume first question... but ideally user should be able to pick
-        # the question from the sidebar
-
         question: StackOverflowQuestion = SO_RESULTS[self.index]
         text = ""
-        text += f"# {question.title} | {question.score} vote{'s' if question.score != 1 else ''}\n"
+        text += f"# {question.title} | Score: {question.score}\n"
         text += f"{converter.convert(question.body)}\n"
-        for number, answer in enumerate(question.answers):
+        for i, answer in enumerate(question.answers, 1):
             text += (
-                f"---\n### Answer #{number + 1} | "
-                f"{answer.score} vote{'s' if answer.score != 1 else ''}"
-                f"{' | [Accepted]' if answer.is_accepted else ''}"
-                f"\n---\n "
+                f"---\n### Answer #{i} | Score: {answer.score}"
+                f"{' ✔️' if answer.is_accepted else ''}"
+                "\n---\n "
             )
             text += converter.convert(answer.body)
             text += "\n"
@@ -142,29 +140,29 @@ class Display(App):
         return output
 
     async def update_body(self) -> None:
-        """Update the body"""
+        """Update the ScrollView body."""
         await self.body.update(self.create_body_text())
         self.body.y = 0
         self.body.target_y = 0
 
     async def action_next_question(self) -> None:
-        """Go to the next question"""
-        if len(SO_RESULTS) > self.index + 1:
+        """Go to the next question."""
+        if self.index + 1 < len(SO_RESULTS):
             self.viewing_traceback = False
             self.index += 1
             await self.update_body()
             self.sidebar.set_index(self.index)
 
     async def action_prev_question(self) -> None:
-        """Go to the previous question"""
-        if self.index != 0:
+        """Go to the previous question."""
+        if self.index:
             self.viewing_traceback = False
             self.index -= 1
             await self.update_body()
             self.sidebar.set_index(self.index)
 
     async def action_open_browser(self) -> None:
-        """Open the question in the browser"""
+        """Open the question in the browser."""
         if SO_RESULTS != []:
             webbrowser.open(SO_RESULTS[self.index].link)
 
@@ -173,7 +171,7 @@ class Display(App):
         webbrowser.open(GH_ISSUES)
 
     async def action_open_google(self) -> None:
-        """Open the browser with google search results"""
+        """Open the browser with google search results."""
         exc_msg = "".join(
             traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
         ).strip()
@@ -182,16 +180,17 @@ class Display(App):
         webbrowser.open(url)
 
     async def action_show_traceback(self) -> None:
-        """Show the traceback"""
+        """Show the traceback."""
         self.viewing_traceback = not self.viewing_traceback
         await self.update_body()
 
     async def on_startup(self, event: events.Startup) -> None:
-        """App layout"""
+        """Main Program"""
         exc_msg = "".join(
             traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
         ).strip()
         self.title = f"{APP_NAME} | {exc_msg}"
+
         view = await self.push_view(DockView())
         self.index = 0
         self.viewing_traceback = False
@@ -201,12 +200,12 @@ class Display(App):
         self.body = ScrollView(self.create_body_text())
 
         footer.add_key("q", "Quit")
-        footer.add_key("←", "Previous Question")
-        footer.add_key("→", "Next Question")
+        footer.add_key("←", "Prev Q")
+        footer.add_key("→", "Next Q")
+        footer.add_key("s", "Show Questions")
         footer.add_key("t", "Toggle Traceback")
-        footer.add_key("s", "Toggle Question List")
-        footer.add_key("d", "Open in Browser")
-        footer.add_key("f", "Search Google")
+        footer.add_key("d", "Open Browser")
+        footer.add_key("f", "Google")
         footer.add_key("i", "Report Issue")
 
         await self.set_focus(self.body.page)
