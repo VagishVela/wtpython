@@ -70,20 +70,19 @@ class StackOverflowFinder:
     """Manage results from Stack Overflow."""
 
     def __init__(self, clear_cache: bool = False):
-        self.clear_cache = clear_cache
-
-    def search(self, error_message: str, max_results: int = SO_MAX_RESULTS) -> List[StackOverflowQuestion]:
-        """Search Stack Overflow with the initialized SE API object"""
-        # Initialize the cache for the HTTP requests, and the session
-        session = CachedSession(
+        self.session = CachedSession(
             'stackoverflow',
             backend=FileCache(REQUEST_CACHE_LOCATION),
             expire_after=REQUEST_CACHE_DURATION,
         )
-        if self.clear_cache:
-            session.cache.clear()
+        if clear_cache:
+            self.session.cache.clear()
 
-        result = session.get(
+    def search(self, error_message: str, max_results: int = SO_MAX_RESULTS) -> List[StackOverflowQuestion]:
+        """Search Stack Overflow with the initialized SE API object"""
+        # Initialize the cache for the HTTP requests, and the session
+
+        result = self.session.get(
             f"{SO_API}/search",
             params={
                 "pagesize": max_results,
@@ -105,7 +104,7 @@ class StackOverflowFinder:
             if item["is_answered"]:
                 answers.append([
                     item,
-                    session.get(
+                    self.session.get(
                         f'{SO_API}/questions/{item["question_id"]}/answers',
                         params={
                             "order": "desc",
@@ -116,7 +115,7 @@ class StackOverflowFinder:
                     ).json(),
                 ])
 
-        session.close()
+        self.session.close()
 
         return [StackOverflowQuestion(*ans) for ans in answers]
 
