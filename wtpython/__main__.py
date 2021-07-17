@@ -11,7 +11,7 @@ from rich.traceback import Traceback
 from wtpython import SearchError
 from wtpython.backends.stackoverflow import StackOverflowFinder
 from wtpython.display import Display, store_results_in_module
-from wtpython.settings import GH_ISSUES, MAX_SO_RESULTS
+from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
 
 
 def trim_exception_traceback(tb: traceback) -> traceback:
@@ -110,7 +110,7 @@ def main() -> None:
 
     so = StackOverflowFinder()
     try:
-        so_results = so.search(error, MAX_SO_RESULTS)
+        so_results = so.search(error, SO_MAX_RESULTS)
     except SearchError as e:
         display_app_error(e)
         return

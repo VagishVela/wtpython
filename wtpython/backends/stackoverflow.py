@@ -7,7 +7,7 @@ from rich import print
 
 from wtpython import SearchError
 from wtpython.backends import REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION
-from wtpython.settings import MAX_SO_RESULTS, SO_API, SO_FILTER
+from wtpython.settings import SO_API, SO_FILTER, SO_MAX_RESULTS
 
 
 class StackOverflowAnswer:
@@ -67,7 +67,7 @@ class StackOverflowQuestion:
 class StackOverflowFinder:
     """Manage results from Stack Overflow."""
 
-    def search(self, error_message: str, max_results: int = MAX_SO_RESULTS) -> List[StackOverflowQuestion]:
+    def search(self, error_message: str, max_results: int = SO_MAX_RESULTS) -> List[StackOverflowQuestion]:
         """Search Stack Overflow with the initialized SE API object."""
         # Initialize the cache for the HTTP requests, and the session
         session = CachedSession(
