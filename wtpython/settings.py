@@ -2,7 +2,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 APP_NAME = "WTPython"
-SO_FILTER = "!6VvPDzQ)xXOrL"
+SO_FILTER = "!6VvPDzQ)xXOrL"  # https://api.stackexchange.com/docs/filters
 MAX_SO_RESULTS = 10
 
 GH_ORG = "what-the-python"
