@@ -98,6 +98,12 @@ def parse_arguments() -> dict:
         help="Copy error to clipboard",
     )
     parser.add_argument(
+        "--clear-cache",
+        action="store_true",
+        default=False,
+        help="Clear StackOverflow cache",
+    )
+    parser.add_argument(
         "args",
         nargs="*",
         help="Arguments normally passed to wtpython",
@@ -132,9 +138,13 @@ def main() -> None:
     if opts["copy_error"]:
         pyperclip.copy(error)
 
-    so = StackOverflowFinder()
+    so = StackOverflowFinder(clear_cache=opts["clear_cache"])
+
     try:
         so_results = so.search(error, SO_MAX_RESULTS)
+        if len(so_results) == 0:
+            # If no results have been found, search the error class name.
+            so_results = so.search(error.split(" ")[0].strip(":"), SO_MAX_RESULTS)
     except SearchError as e:
         display_app_error(e)
         return
