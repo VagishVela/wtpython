@@ -78,46 +78,42 @@ class StackOverflowFinder:
         if clear_cache:
             self.session.cache.clear()
 
+    def get_answers(self, question: dict) -> List[StackOverflowAnswer]:
+        """Get all answers for a question."""
+        params = {
+            "order": "desc",
+            "sort": "activity",
+            "site": "stackoverflow",
+            "filter": SO_FILTER,
+        }
+        response = self.session.get(f"{SO_API}/questions/{question['question_id']}/answers", params=params)
+        return response.json()
+
     def search(self, error_message: str, max_results: int = SO_MAX_RESULTS) -> List[StackOverflowQuestion]:
-        """Search Stack Overflow with the initialized SE API object"""
-        # Initialize the cache for the HTTP requests, and the session
-
-        result = self.session.get(
-            f"{SO_API}/search",
-            params={
-                "pagesize": max_results,
-                "order": "desc",
-                "sort": "relevance",
-                "tagged": "python",
-                "intitle": error_message.split(" ")[0].strip(":"),
-                "site": "stackoverflow",
-                "filter": SO_FILTER,
-            },
-        )
-        data = result.json()
-
-        if not result.ok:
+        """Search Stack Overflow for relevant questions."""
+        params = {
+            "pagesize": max_results,
+            "order": "desc",
+            "sort": "relevance",
+            "tagged": "python",
+            "intitle": error_message,
+            "site": "stackoverflow",
+            "filter": SO_FILTER,
+        }
+        response = self.session.get(f"{SO_API}/search", params=params)
+        if not response.ok:
             raise SearchError("Error fetching StackOverflow response: {data}")
 
-        answers = []
-        for item in data["items"]:
-            if item["is_answered"]:
-                answers.append([
-                    item,
-                    self.session.get(
-                        f'{SO_API}/questions/{item["question_id"]}/answers',
-                        params={
-                            "order": "desc",
-                            "sort": "activity",
-                            "site": "stackoverflow",
-                            "filter": SO_FILTER,
-                        }
-                    ).json(),
-                ])
+        questions = response.json()
+
+        data = [
+            StackOverflowQuestion(question, self.get_answers(question))
+            for question in questions["items"]
+            if question["is_answered"]
+        ]
 
         self.session.close()
-
-        return [StackOverflowQuestion(*ans) for ans in answers]
+        return data
 
 
 if __name__ == "__main__":
