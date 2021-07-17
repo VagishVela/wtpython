@@ -7,13 +7,25 @@ from rich import print
 
 from wtpython import SearchError
 from wtpython.backends import REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION
-from wtpython.settings import SO_FILTER
+from wtpython.settings import MAX_SO_RESULTS, SO_API, SO_FILTER
 
 
 class StackOverflowAnswer:
-    """Stack overflow answer object"""
+    """Stack overflow answer object."""
 
     def __init__(self, answer_json: dict):
+        """Store results form answer object.
+
+        The answer object contains the following fields:
+        - answer_id
+        - body
+        - content_license
+        - creation_date
+        - is_accepted
+        - last_activity_date
+        - question_id
+        - score
+        """
         self.raw_json: dict = answer_json
         self.is_accepted: bool = answer_json["is_accepted"]
         self.score: int = answer_json["score"]
@@ -22,7 +34,20 @@ class StackOverflowAnswer:
 
 
 class StackOverflowQuestion:
-    """Stack overflow question object"""
+    """Stack overflow question object.
+
+    The question object (question_json) contains the following fields:
+    - answer_count
+    - content_license
+    - creation_date
+    - is_answered
+    - last_activity_date
+    - link
+    - owner
+    - question_id
+    - score
+    - view_count
+    """
 
     def __init__(self, question_json: dict, answer_json: dict):
         self.raw_json: dict = question_json
@@ -31,6 +56,7 @@ class StackOverflowQuestion:
         self.title: str = html.unescape(question_json["title"])
         self.score: int = question_json["score"]
         self.body: str = question_json["body"]
+
         self.answers: List[StackOverflowAnswer] = [StackOverflowAnswer(x) for x in answer_json["items"]]
         self.answers.sort(key=lambda x: (x.is_accepted, x.score), reverse=True)
 
@@ -39,10 +65,10 @@ class StackOverflowQuestion:
 
 
 class StackOverflowFinder:
-    """Get results from Stack Overflow"""
+    """Manage results from Stack Overflow."""
 
-    def search(self, error_message: str, max_results: int = 5) -> List[StackOverflowQuestion]:
-        """Search Stack Overflow with the initialized SE API object"""
+    def search(self, error_message: str, max_results: int = MAX_SO_RESULTS) -> List[StackOverflowQuestion]:
+        """Search Stack Overflow with the initialized SE API object."""
         # Initialize the cache for the HTTP requests, and the session
         session = CachedSession(
             'stackoverflow',
@@ -51,7 +77,7 @@ class StackOverflowFinder:
         )
 
         result = session.get(
-            "https://api.stackexchange.com/2.3/search",
+            f"{SO_API}/search",
             params={
                 "pagesize": max_results,
                 "order": "desc",
@@ -68,12 +94,12 @@ class StackOverflowFinder:
             raise SearchError("Error fetching StackOverflow response: {data}")
 
         answers = []
-        for i in data["items"]:
-            if i["is_answered"]:
+        for item in data["items"]:
+            if item["is_answered"]:
                 answers.append([
-                    i,
+                    item,
                     session.get(
-                        f'https://api.stackexchange.com/questions/{i["question_id"]}/answers',
+                        f'{SO_API}/questions/{item["question_id"]}/answers',
                         params={
                             "order": "desc",
                             "sort": "activity",
