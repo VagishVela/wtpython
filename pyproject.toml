@@ -6,6 +6,7 @@ build-backend = "flit_core.buildapi"
 module = "wtpython"
 author = "Perceptive Porcupines"
 author-email = "email@example.com"
+home-page = "https://github.com/what-the-python/wtpython"
 classifiers = [ "License :: OSI Approved :: MIT License",]
 description-file = "README.md"
 requires-python=">=3.9"
