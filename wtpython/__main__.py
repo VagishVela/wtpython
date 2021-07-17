@@ -99,21 +99,19 @@ def parse_arguments() -> dict:
     )
     parser.add_argument(
         "args",
-        nargs="+",
-        help="Arguments normally passed to python",
+        nargs="*",
+        help="Arguments normally passed to wtpython",
     )
 
     opts = vars(parser.parse_args())
 
     if not opts['args']:
-        print("You must specify a script")
-        parser.print_help(sys.stderr)
+        parser.error("Please specify a script to run")
         sys.exit(1)
 
     if not os.path.isfile(opts['args'][0]):
-        parser.print_help(sys.stderr)
-        print(HorizontalRule())
-        raise FileNotFoundError(f"Could not find {opts['args'][0]}")
+        parser.error(f"{opts['args'][0]} is not a file")
+        sys.exit(1)
 
     return opts
 
