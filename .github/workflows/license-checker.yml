@@ -1,6 +1,12 @@
 name: MIT license compatibility checker
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - pyproject.toml
+  pull_request:
+    paths:
+      - pyproject.toml
 
 concurrency: lint-${{ github.sha }}
 
