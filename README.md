@@ -91,6 +91,21 @@ The `.pre-commit-config.yaml` file is configured to perform the following tasks 
 ```
 pre-commit install
 ```
+### For Windows Developers
+The Textual dependency does not currently work on Windows. You can use WSL to use/develop this on Windows.
+
+1. Install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (Windows Subsystem for Linux)
+2. VSCode users can remote into WSL with the [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) extension.
+3. Once inside WSL:<br>
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install python3-pip
+pip3 install virtualenv
+sudo apt install python3-venv
+```
+You may need to update your python version depending on what comes with your Linux distro.
+From here you should be able to follow the original contribution instructions. Just use python3 instead of python.
 
 ## FAQ
 
