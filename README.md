@@ -1,99 +1,169 @@
-# What The Python?!
+![PyPI - License](https://img.shields.io/pypi/l/wtpython)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wtpython)
+![PyPI - Status](https://img.shields.io/pypi/status/wtpython)
+![PyPI](https://img.shields.io/pypi/v/wtpython)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/wtpython)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/wtpython)
 
-Helping you find answers to the errors Python spits out.
+![Logo](https://avatars.githubusercontent.com/u/87154160?s=200&v=4)
+
+# What the Python?!
+
+Find solutions to your Python errors without leaving your IDE or terminal!
+
+Ever have Python throw an error traceback longer than a CVS receipt 🧾? Is it dizzying to read through a bunch of cryptic lines trying to figure out exactly what caused the error? Do you look at the traceback and go, "WHAT THE ....."?😕
+
+What the Python (`wtpython`) is a simple terminal user interface that allows you to explore relevant answers on Stackoverflow without leaving your terminal or IDE. When you get an error, all you have to do is swap `python` for `wtpython`. When your code hits an error, you'll see a textual interface for exploring relevant answers allowing you to stay focused and ship faster! 🚀
+
+`wtpython` is styled using [Rich](https://rich.readthedocs.io/en/stable/) and the interface is developed using [Textual](https://github.com/willmcgugan/textual).
+
+Like what you see? Feel free to share `#wtpython` on social media!
 
 ## Installation
 
-You can find the source code on GitHub at: https://github.com/what-the-python/wtpython
+This project is hosted on [pypi](https://pypi.org/project/wtpython/), allowing you to install it with pip.
 
-To install directly please run:
 ```
 pip install wtpython
 ```
+
 ## Usage
 
-When you are running a python script, you might eventually come across an error like so.
+When you're coding and running your script or application, then all of a sudden, you see an error and think to yourself "what the...?"
 
 ```
-$ python example/runs_with_error.py
-0
-1
-2
+$ python example/division_by_zero_error.py
 Traceback (most recent call last):
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/example/runs_with_error.py", line 8, in <module>
-    requests.get('badurl')
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/.venv/lib/python3.9/site-packages/requests/api.py", line 76, in get
-    return request('get', url, params=params, **kwargs)
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/.venv/lib/python3.9/site-packages/requests/api.py", line 61, in request
-    return session.request(method=method, url=url, **kwargs)
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/.venv/lib/python3.9/site-packages/requests/sessions.py", line 528, in request
-    prep = self.prepare_request(req)
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/.venv/lib/python3.9/site-packages/requests/sessions.py", line 456, in prepare_request
-    p.prepare(
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/.venv/lib/python3.9/site-packages/requests/models.py", line 316, in prepare
-    self.prepare_url(url, params)
-  File "/home/cohan/github/perceptive-porcupines/Perceptive-Porcupines-Code-Jam-8/.venv/lib/python3.9/site-packages/requests/models.py", line 390, in prepare_url
-    raise MissingSchema(error)
-requests.exceptions.MissingSchema: Invalid URL 'badurl': No schema supplied. Perhaps you meant http://badurl?
+  File "/home/cohan/github/what-the-python/wtpython/example/division_by_zero_error.py", line 1, in <module>
+    1 / 0
+ZeroDivisionError: division by zero
 ```
 
-In this case, simply replace `python` with `wtpython` and you will see the error message line as well as what installed packages were part of the stack trace.
+All you have to do is jump to the beginning of the line and change `python` to `wtpython` and the magic will happen.
 
 ```
-$ wtpython example/runs_with_error.py
+$ wtpython example/division_by_zero_error.py
+# Magic! 🎩
 ```
 
-This will bring up something like below, the color scheme might be different based off how your terminal is setup.
+![usage](https://raw.githubusercontent.com/what-the-python/wtpython/main/docs/_images/Usage.gif)
 
-![wtpython TUI](docs/_images/demo.png)
+If you want results but don't want to go into the interface, just pass the `-n` flag to see the Rich formatted traceback and links to the most relevant  questions on Stackoverflow.
 
-## Development Tools
+![no-display-usage](https://raw.githubusercontent.com/what-the-python/wtpython/main/docs/_images/No%20Display%20Usage.gif)
 
-- [Rich](https://rich.readthedocs.io/en/stable/) is a library to create styled text to the terminal. We'll use it for styling and formatting text.
-- [Textual](https://github.com/willmcgugan/textual) is a part of rich to further aid in TUI design. We'll use it to create widgets and adjust the change the layout of the TUI.
-- [Flit](https://flit.readthedocs.io/en/latest/) is a simple way to develop Python packages. It's pretty lightweight but can do a lot. We'll use it to manage dependencies.
-- [pre-commit](https://pre-commit.com/) will run a few tests before you can commit your code. Don't worry, it will make the changes for you. Worst case, you'll have to type the `git add/commit` lines twice.
+If you want, you can always run `wtpython` in place of `python`. `wtpython` is designed to allow your code to function normally and only acts when your code hits an error. **`wtpython` will even allow you to pass arguments to your own script!** If our code hits an error, please [let us know](https://github.com/what-the-python/wtpython/issues).
+
+### Command Line Options
+
+All command line options should be passed before your script and arguments passed to your script.
+
+Flag | Action
+---|---
+`-n` or `--no-display` | Do not enter the interactive session, just print the error and give me the links!
+`-c` or `--copy-error` | Add the error message to your clipboard so you can look for answers yourself (it's okay, we understand).
+`--clear-cache` | `wtpython` will cache results of each error message for up to a day. This helps prevent you from getting throttled by the Stackoverflow API.
+
+### Interface Hotkeys
+
+Key | Action
+---|---
+<kbd>s</kbd>| Toggle the sidebar (questions list)
+<kbd>t</kbd>| View the traceback
+<kbd>←</kbd>, <kbd>k</kbd>| View previous question
+<kbd>→</kbd>, <kbd>j</kbd>| View next question
+<kbd>d</kbd>| Open question in your browser
+<kbd>f</kbd>| Search for answers on Google
+<kbd>q</kbd>, <kbd>ctrl</kbd>+<kbd>c</kbd> | Quit the interface.
+<kbd>i</kbd> | Report an issue with `wtpython`
+
+## Roadmap
+
+This project is still in the early phases, but we have big plans going forward. We hope to tackle:
+
+- Windows support (without WSL)
+- Jupyter integration
+- More interactive interface
+- User configuration settings
+- Much much more!
+
+## Feedback / Support
+
+If you have any feedback, please [create an issue](https://github.com/what-the-python/wtpython/issues) or [start a discussion](https://github.com/what-the-python/wtpython/discussions)
 
 
-## Contribution instructions
+## Contributing
 
-To setup the system for development please fork the repository and do the below before submitting a pull request.
-### Create and activate a virtual environment
+Contributions are welcome!
+
+For typos and minor corrections, please feel free to submit a PR. For technical changes, please speak with the core team first. We'd hate to turn down your awesome work.
+
+Note: Due to a [limitation in textual](https://github.com/willmcgugan/textual/issues/14), Windows is not supported, but fear not, this works in [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+1. Fork the repository to get started.
+
+2. Clone the repo and enter the `wtpython` folder.
+
+```
+git clone https://github.com/<your-name>/wtpython.git
+cd wtpython
+```
+
+3. Create and activate a virtual environment.
 ```
 python -m venv .venv --prompt template
 source .venv/bin/activate
 ```
 
-### Upgrade pip and install flit manually
+4. Upgrade pip and install [Flit](https://flit.readthedocs.io/en/latest/).
 ```
-python -m pip install -U pip flit
+python -m pip install --upgrade pip flit
 ```
 
-### Install the package using symlinks
-
-Run this command to install the package in your virtual environment. If you add dependencies to `pyproject.toml`, you'll have to run this command again to install the new dependencies. Make sure to pin the version in `pyproject.toml`.
-
-
+5. Install the package in editable mode.
 ```
 flit install -s
 ```
 
-### Install pre-commit
+If you add dependencies to the project, you'll have to run this command again to install the new dependencies. Make sure to pin the version in `pyproject.toml`. This software is under a MIT license, so all dependencies must respect this. There is an automated test that will block contributions that violate MIT.
+
+
+6. Install [pre-commit](https://pre-commit.com/).
+```
+pre-commit install
+```
+
 The `.pre-commit-config.yaml` file is configured to perform the following tasks on each commit:
 
 - Validate yaml files
 - Validate toml files
 - Ensure a single new line on each file
 - Ensure trailing white spaces are removed
-- Format your code with black
+- Ensure `noqa` annotations have specific codes
 - Ensure your python imports are sorted consistently
+- Check for errors with flake8
 
+7. Create a new branch in your repo.
 ```
-pre-commit install
+git checkout -b <mybranch>
 ```
 
-## FAQ
+8. Make some awesome changes!
 
-1. How do I clear all of the cached results?
+We're excited to see what you can do. 🤩
 
-You can clear the cache by using the `--clear-cache` param for the query or run delete the `~/.wtpython_cache`.
+9. Commit your changes.
+```
+git add .
+git commit -m "<description of changes>"
+```
+
+10. Push your changes up to your repository.
+```
+git push --set-upstream origin <mybranch>
+```
+
+11. Open a Pull Request.
+Please provide a good description to help us understand what you've done. We are open to your suggestions and hope you'll be open to feedback if necessary.
+
+12. Celebrate! You've just made an open-source contribution, 🎉 and you deserve a gold star! ⭐
