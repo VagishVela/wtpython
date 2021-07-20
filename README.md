@@ -17,6 +17,8 @@ What the Python (`wtpython`) is a simple terminal user interface that allows you
 
 `wtpython` is styled using [Rich](https://rich.readthedocs.io/en/stable/) and the interface is developed using [Textual](https://github.com/willmcgugan/textual).
 
+Like what you see? Feel free to share `#wtpython` on social media!
+
 ## Installation
 
 This project is hosted on [pypi](https://pypi.org/project/wtpython/), allowing you to install it with pip.
