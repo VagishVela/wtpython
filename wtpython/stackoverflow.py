@@ -3,7 +3,6 @@ from typing import List
 
 from requests_cache import CachedSession
 from requests_cache.backends import FileCache
-from rich import print
 
 from wtpython import SearchError
 from wtpython.settings import (
@@ -78,7 +77,7 @@ class StackOverflowFinder:
         if clear_cache:
             self.session.cache.clear()
 
-    def get_answers(self, question: dict) -> List[StackOverflowAnswer]:
+    def get_answers(self, question: dict) -> dict:
         """Get all answers for a question."""
         params = {
             "order": "desc",
@@ -114,7 +113,3 @@ class StackOverflowFinder:
 
         self.session.close()
         return data
-
-
-if __name__ == "__main__":
-    print(StackOverflowFinder().search("requests.exceptions.missingschema", 10)[0].answers[0].score)

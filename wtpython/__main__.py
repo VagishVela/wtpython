@@ -5,6 +5,8 @@ import sys
 import textwrap
 import traceback
 from pathlib import Path
+from types import TracebackType
+from typing import Optional
 
 import pyperclip
 from rich import print
@@ -17,7 +19,7 @@ from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
 from wtpython.stackoverflow import StackOverflowFinder
 
 
-def trim_exception_traceback(tb: traceback) -> traceback:
+def trim_exception_traceback(tb: Optional[TracebackType]) -> Optional[TracebackType]:
     """
     Trim the traceback to remove extra frames
 
@@ -39,7 +41,7 @@ def trim_exception_traceback(tb: traceback) -> traceback:
     return tb
 
 
-def run(args: list[str]) -> Exception:
+def run(args: list[str]) -> Optional[Exception]:
     """Execute desired program.
 
     This will set sys.argv as the desired program would receive them and execute the script.
@@ -68,7 +70,8 @@ def display_app_error(exc: Exception) -> None:
     traceback.print_exception(type(exc), exc, exc.__traceback__)
     print(HorizontalRule())
     print(
-        f":nerd_face: [bold][green]Please let us know by by opening a new issue at:[/] [blue underline]{GH_ISSUES}"
+        ":nerd_face: [bold][green]Please let us know by by opening a new issue at:"
+        f"[/] [link={GH_ISSUES}]{GH_ISSUES}[/link]"
     )
 
 
@@ -164,7 +167,3 @@ def main() -> None:
             Display().run()
         except Exception as e:
             display_app_error(e)
-
-
-if __name__ == "__main__":
-    main()
