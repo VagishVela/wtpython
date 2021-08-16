@@ -22,7 +22,7 @@ Like what you see? Feel free to share `#wtpython` on social media!
 
 ## Installation
 
-This project is hosted on [pypi](https://pypi.org/project/wtpython/), allowing you to install it with pip.
+This project is hosted on [PyPI](https://pypi.org/project/wtpython/), allowing you to install it with pip.
 
 ```
 pip install wtpython
