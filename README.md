@@ -4,6 +4,7 @@
 ![PyPI](https://img.shields.io/pypi/v/wtpython)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/wtpython)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/wtpython)
+[![Discord](https://img.shields.io/discord/591914197219016707.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/DqdKBeUTmw)
 
 ![Logo](https://avatars.githubusercontent.com/u/87154160?s=200&v=4)
 
@@ -89,7 +90,7 @@ This project is still in the early phases, but we have big plans going forward. 
 
 ## Feedback / Support
 
-If you have any feedback, please [create an issue](https://github.com/what-the-python/wtpython/issues) or [start a discussion](https://github.com/what-the-python/wtpython/discussions)
+If you have any feedback, please [create an issue](https://github.com/what-the-python/wtpython/issues) or [start a discussion](https://github.com/what-the-python/wtpython/discussions). There is also a Discord server which you can join with this [invite](https://discord.gg/DqdKBeUTmw).
 
 ## Contributing
 
