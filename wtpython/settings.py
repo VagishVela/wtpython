@@ -7,6 +7,7 @@ APP_NAME = "WTPython"
 # For example, if getting the user isn't needed, a specific filter can be created to
 # not include the user field. This decreases API calls to save bandwidth.
 # This is the filter we used: https://api.stackexchange.com/2.3/filters/!6VvPDzQ)xXOrL
+# To create a custom filter, use https://api.stackexchange.com/docs/create-filter
 SO_FILTER = "!6VvPDzQ)xXOrL"
 SO_MAX_RESULTS = 10
 SO_API = "https://api.stackexchange.com/2.3"
