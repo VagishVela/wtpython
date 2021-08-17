@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import html
 import traceback
 import webbrowser
-from typing import Any, List, Union
+from typing import Any, Iterable, Union
 from urllib.parse import urlencode
 
 from markdownify import MarkdownConverter
@@ -20,7 +22,7 @@ from textual.widgets import Footer, Header, ScrollView
 from wtpython.settings import APP_NAME, GH_ISSUES
 from wtpython.stackoverflow import StackOverflowQuestion
 
-RAISED_EXC: Exception = None
+RAISED_EXC: Exception = Exception()
 SO_RESULTS: list[StackOverflowQuestion] = []
 
 
@@ -60,12 +62,11 @@ class Sidebar(Widget):
         self.index = index
 
     def __init__(
-            self,
-            name: Union[str, None],
-            questions: List[StackOverflowQuestion] = None,
+        self,
+        name: Union[str, None],
+        questions: Iterable[StackOverflowQuestion] = (),
     ) -> None:
-        if questions is not None:
-            self.questions = questions
+        self.questions = questions
         super().__init__(name=name)
 
     def get_questions(self) -> str:
@@ -150,7 +151,7 @@ class Display(App):
     async def action_next_question(self) -> None:
         """Go to the next question."""
         if self.index + 1 < len(SO_RESULTS):
-            self.viewing_traceback = False
+            self.viewing_traceback: bool = False
             self.index += 1
             await self.update_body()
             self.sidebar.set_index(self.index)
@@ -198,8 +199,8 @@ class Display(App):
         self.viewing_traceback = False
         header = Header()
         footer = Footer()
-        self.sidebar = Sidebar("sidebar", SO_RESULTS)
-        self.body = ScrollView(self.create_body_text())
+        self.sidebar: Sidebar = Sidebar("sidebar", SO_RESULTS)
+        self.body: ScrollView = ScrollView(self.create_body_text())
 
         footer.add_key("q", "Quit")
         footer.add_key("←", "Prev Q")
