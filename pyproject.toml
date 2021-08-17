@@ -27,7 +27,7 @@ requires=[
     "requests == 2.25.1",
     "textual == 0.1.9",
     "toml == 0.10.2",
-    "rich == 11.0.0",
+    "rich == 10.7.0",
     "pyperclip == 1.8.2",
     "requests-cache == 0.7.1",
     "markdownify == 0.9.2"
