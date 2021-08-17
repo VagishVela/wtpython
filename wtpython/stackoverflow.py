@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import html
-from typing import List
 
 from requests_cache import CachedSession
 from requests_cache.backends import FileCache
@@ -58,7 +59,7 @@ class StackOverflowQuestion:
         self.score: int = question_json["score"]
         self.body: str = question_json["body"]
 
-        self.answers: List[StackOverflowAnswer] = [StackOverflowAnswer(x) for x in answer_json["items"]]
+        self.answers: list[StackOverflowAnswer] = [StackOverflowAnswer(x) for x in answer_json["items"]]
         self.answers.sort(key=lambda x: (x.is_accepted, x.score), reverse=True)
 
     def __str__(self):
@@ -88,7 +89,7 @@ class StackOverflowFinder:
         response = self.session.get(f"{SO_API}/questions/{question['question_id']}/answers", params=params)
         return response.json()
 
-    def search(self, error_message: str, max_results: int = SO_MAX_RESULTS) -> List[StackOverflowQuestion]:
+    def search(self, error_message: str, max_results: int = SO_MAX_RESULTS) -> list[StackOverflowQuestion]:
         """Search Stack Overflow for relevant questions."""
         params = {
             "pagesize": max_results,
