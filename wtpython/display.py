@@ -25,7 +25,7 @@ SO_RESULTS: list[StackOverflowQuestion] = []
 
 
 def store_results_in_module(
-    raised_exc: Exception, so_results: list[StackOverflowQuestion]
+        raised_exc: Exception, so_results: list[StackOverflowQuestion]
 ) -> None:
     """Unfortunate hack since there is an error with passing values to Display.
 
@@ -60,9 +60,9 @@ class Sidebar(Widget):
         self.index = index
 
     def __init__(
-        self,
-        name: Union[str, None],
-        questions: List[StackOverflowQuestion] = None,
+            self,
+            name: Union[str, None],
+            questions: List[StackOverflowQuestion] = None,
     ) -> None:
         if questions is not None:
             self.questions = questions
@@ -71,11 +71,14 @@ class Sidebar(Widget):
     def get_questions(self) -> str:
         """Format question list."""
         text = ""
+        mapping_indices = {self.index - 1: "[bold][white]Previous Question[/][/]",
+                           self.index: "[bold][yellow]Current Question[/][/]",
+                           self.index + 1: "[bold][white]Next Question[/][/]"}
         for i, question in enumerate(self.questions):
-            title = html.unescape(question.title)
-            color = 'yellow' if i == self.index else 'white'
-            accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
-            text += f"[{color}]#{i + 1} [bold]Score: {question.score}[/]{accepted} - {title}[/]\n\n"
+            if self.index - 1 <= i <= self.index + 1:
+                title = html.unescape(question.title)
+                accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
+                text += f"{mapping_indices[i]}\n [bold]Score: {question.score}[/]{accepted} - {title}[/]\n\n"
 
         return text
 
