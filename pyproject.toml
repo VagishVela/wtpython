@@ -25,7 +25,7 @@ requires-python=">=3.7"
 requires=[
     "parse == 1.19.0",
     "requests == 2.25.1",
-    "textual == 0.1.7",
+    "textual == 0.1.9",
     "toml == 0.10.2",
     "rich == 10.6.0",
     "pyperclip == 1.8.2",
