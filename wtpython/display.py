@@ -95,20 +95,23 @@ class Display(App):
 
     async def on_load(self, event: events.Load) -> None:
         """Key bindings."""
-        await self.bind("q,ctrl+c", "quit")
-        await self.bind("s", "view.toggle('sidebar')")
-        await self.bind("t", "show_traceback")
+        await self.bind("q", "quit", show=False)
+        await self.bind("ctrl+c", "quit", description="Quit", key_display="ctrl+c", show=True)
 
-        await self.bind("d", "open_browser")
-        await self.bind("f", "open_google")
-        await self.bind("i", "report_issue")
+        await self.bind("left", "prev_question", description="Prev Q", key_display="←")
+        await self.bind("right", "next_question", description="Next Q", key_display="→")
 
-        await self.bind("left", "prev_question")
-        await self.bind("right", "next_question")
+        await self.bind("s", "view.toggle('sidebar')", description="Show Questions")
+        await self.bind("t", "show_traceback", description="Toggle Traceback")
+
+        await self.bind("d", "open_browser", description="Open Browser")
+        await self.bind("f", "open_google", description="Google")
+        await self.bind("i", "report_issue", description="Report Issue")
+
 
         # Vim shortcuts...
-        await self.bind("k", "prev_question")
-        await self.bind("j", "next_question")
+        await self.bind("k", "prev_question", show=False)
+        await self.bind("j", "next_question", show=False)
 
     def create_body_text(self) -> RenderableType:
         """Generate the text to display in the ScrollView."""
@@ -184,7 +187,7 @@ class Display(App):
         self.viewing_traceback = not self.viewing_traceback
         await self.update_body()
 
-    async def on_startup(self, event: events.Startup) -> None:
+    async def on_mount(self, event: events.Mount) -> None:
         """Main Program"""
         exc_msg = "".join(
             traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
@@ -199,19 +202,7 @@ class Display(App):
         self.sidebar: Sidebar = Sidebar("sidebar", SO_RESULTS)
         self.body: ScrollView = ScrollView(self.create_body_text())
 
-        footer.add_key("q", "Quit")
-        footer.add_key("←", "Prev Q")
-        footer.add_key("→", "Next Q")
-        footer.add_key("s", "Show Questions")
-        footer.add_key("t", "Toggle Traceback")
-        footer.add_key("d", "Open Browser")
-        footer.add_key("f", "Google")
-        footer.add_key("i", "Report Issue")
-
-        await self.set_focus(self.body.page)
-
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar, edge="left", size=35)
         await view.dock(self.body, edge="right")
-        self.require_layout()
