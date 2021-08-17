@@ -108,7 +108,6 @@ class Display(App):
         await self.bind("f", "open_google", description="Google")
         await self.bind("i", "report_issue", description="Report Issue")
 
-
         # Vim shortcuts...
         await self.bind("k", "prev_question", show=False)
         await self.bind("j", "next_question", show=False)
