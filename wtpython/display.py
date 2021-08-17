@@ -71,9 +71,9 @@ class Sidebar(Widget):
     def get_questions(self) -> str:
         """Format question list."""
         text = ""
-        mapping_indices = {self.index - 1: "[bold][white]Previous Question[/][/]",
+        mapping_indices = {self.index - 1: "[@click 'prev_question()'][bold][blue]Previous Question[/][/][/]",
                            self.index: "[bold][yellow]Current Question[/][/]",
-                           self.index + 1: "[bold][white]Next Question[/][/]"}
+                           self.index + 1: "[@click 'next_question()'][bold][blue]Next Question[/][/][/]"}
         for i, question in enumerate(self.questions):
             if self.index - 1 <= i <= self.index + 1:
                 title = html.unescape(question.title)
