@@ -66,6 +66,10 @@ class Sidebar(Widget):
         super().__init__(name=name)
         self._text: Text | None = None
 
+    async def watch_index(self, value: Optional[int]) -> None:
+        """If index changes, regenerate the text."""
+        self._text = None
+
     async def watch_highlighted(self, value: Optional[int]) -> None:
         """If highlight key changes we need to regenerate the text."""
         self._text = None
