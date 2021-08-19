@@ -7,14 +7,11 @@ from typing import Any, Iterable, Optional, Union
 from urllib.parse import urlencode
 
 from markdownify import MarkdownConverter
-from rich import box
-import rich
-from rich.align import Align
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
-from rich.traceback import Traceback
 from rich.text import Text
+from rich.traceback import Traceback
 from textual import events
 from textual.app import App
 from textual.views import DockView
@@ -60,9 +57,18 @@ class Sidebar(Widget):
     index: Reactive[int] = Reactive(0)
     highlighted: Reactive[Optional[int]] = Reactive(None)
 
-    async def watch_highlighted(self, value) -> None:
+    def __init__(
+        self,
+        name: Union[str, None],
+        questions: Iterable[StackOverflowQuestion] = (),
+    ) -> None:
+        self.questions = questions
+        super().__init__(name=name)
+        self._text: Text | None = None
+
+    async def watch_highlighted(self, value: Optional[int]) -> None:
         """If highlight key changes we need to regenerate the text."""
-        self.text = None
+        self._text = None
 
     async def on_mouse_move(self, event: events.MouseMove) -> None:
         """Store any key we are moving over."""
@@ -71,15 +77,6 @@ class Sidebar(Widget):
     async def on_leave(self, event: events.Leave) -> None:
         """Clear any highlight when the mouse leave the widget"""
         self.highlighted = None
-
-    def __init__(
-        self,
-        name: Union[str, None],
-        questions: Iterable[StackOverflowQuestion] = (),
-    ) -> None:
-        self.questions = questions
-        super().__init__(name=name)
-        self.text: Text | None = None
 
     def get_questions(self) -> Text:
         """Format question list."""
@@ -91,7 +88,7 @@ class Sidebar(Widget):
             title = html.unescape(question.title)
             color = 'yellow' if i == self.index else ('grey' if self.highlighted == i else 'white')
             accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
-            item_text = Text.assemble(
+            item_text = Text.assemble(  # type: ignore
                 (f"#{i + 1} ", color),
                 (f"Score: {question.score}", f"{color} bold"),
                 (f"{accepted} - {title}\n\n", f"{color}"),
@@ -103,12 +100,12 @@ class Sidebar(Widget):
 
     def render(self) -> RenderableType:
         """Render the panel."""
-        if self.text is None:
-            self.text = Panel(
+        if self._text is None:
+            self._text = Panel(  # type: ignore
                 self.get_questions(),
                 title="Questions",
             )
-        return self.text
+        return self._text  # type: ignore
 
 
 class Display(App):
@@ -168,7 +165,8 @@ class Display(App):
         self.body.y = 0
         self.body.target_y = 0
 
-    async def action_set_index(self, index: int):
+    async def action_set_index(self, index: int) -> None:
+        """Set question index"""
         self.sidebar.index = index
         self.index = index
         await self.update_body()
