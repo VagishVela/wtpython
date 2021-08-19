@@ -3,15 +3,14 @@ from __future__ import annotations
 import html
 import traceback
 import webbrowser
-from typing import Any, Iterable, Union
+from typing import Any, Iterable, Optional, Union
 from urllib.parse import urlencode
 
 from markdownify import MarkdownConverter
-from rich import box
-from rich.align import Align
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
+from rich.text import Text
 from rich.traceback import Traceback
 from textual import events
 from textual.app import App
@@ -56,10 +55,7 @@ class Sidebar(Widget):
     """Sidebar widget to display list of questions."""
 
     index: Reactive[int] = Reactive(0)
-
-    def set_index(self, index: int) -> None:
-        """Set the current question index."""
-        self.index = index
+    highlighted: Reactive[Optional[int]] = Reactive(None)
 
     def __init__(
         self,
@@ -68,26 +64,52 @@ class Sidebar(Widget):
     ) -> None:
         self.questions = questions
         super().__init__(name=name)
+        self._text: Optional[Text] = None
 
-    def get_questions(self) -> str:
+    async def watch_index(self, value: Optional[int]) -> None:
+        """If index changes, regenerate the text."""
+        self._text = None
+
+    async def watch_highlighted(self, value: Optional[int]) -> None:
+        """If highlight key changes we need to regenerate the text."""
+        self._text = None
+
+    async def on_mouse_move(self, event: events.MouseMove) -> None:
+        """Store any key we are moving over."""
+        self.highlighted = event.style.meta.get("index")
+
+    async def on_leave(self, event: events.Leave) -> None:
+        """Clear any highlight when the mouse leave the widget"""
+        self.highlighted = None
+
+    def get_questions(self) -> Text:
         """Format question list."""
-        text = ""
+        text = Text(
+            no_wrap=False,
+            overflow='ellipsis',
+        )
         for i, question in enumerate(self.questions):
             title = html.unescape(question.title)
-            color = 'yellow' if i == self.index else 'white'
+            color = 'yellow' if i == self.index else ('grey' if self.highlighted == i else 'white')
             accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
-            text += f"[{color}]#{i + 1} [bold]Score: {question.score}[/]{accepted} - {title}[/]\n\n"
+            item_text = Text.assemble(  # type: ignore
+                (f"#{i + 1} ", color),
+                (f"Score: {question.score}", f"{color} bold"),
+                (f"{accepted} - {title}\n\n", f"{color}"),
+                meta={"@click": f"app.set_index({i})", "index": i}
+            )
+            text.append_text(item_text)
 
         return text
 
     def render(self) -> RenderableType:
         """Render the panel."""
-        return Panel(
-            Align.center(self.get_questions(), vertical="top"),
-            title="Questions",
-            border_style="blue",
-            box=box.ROUNDED,
-        )
+        if self._text is None:
+            self._text = Panel(  # type: ignore
+                self.get_questions(),
+                title="Questions",
+            )
+        return self._text  # type: ignore
 
 
 class Display(App):
@@ -147,13 +169,19 @@ class Display(App):
         self.body.y = 0
         self.body.target_y = 0
 
+    async def action_set_index(self, index: int) -> None:
+        """Set question index"""
+        self.sidebar.index = index
+        self.index = index
+        await self.update_body()
+
     async def action_next_question(self) -> None:
         """Go to the next question."""
         if self.index + 1 < len(SO_RESULTS):
             self.viewing_traceback: bool = False
             self.index += 1
             await self.update_body()
-            self.sidebar.set_index(self.index)
+            self.sidebar.index = self.index
 
     async def action_prev_question(self) -> None:
         """Go to the previous question."""
@@ -161,7 +189,7 @@ class Display(App):
             self.viewing_traceback = False
             self.index -= 1
             await self.update_body()
-            self.sidebar.set_index(self.index)
+            self.sidebar.index = self.index
 
     async def action_open_browser(self) -> None:
         """Open the question in the browser."""
