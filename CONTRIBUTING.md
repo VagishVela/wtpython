@@ -16,25 +16,28 @@ cd wtpython
 ```
 
 3. Create and activate a virtual environment.
+
 ```
 python -m venv .venv --prompt template
 source .venv/bin/activate
 ```
 
 4. Upgrade pip and install [Flit](https://flit.readthedocs.io/en/latest/).
+
 ```
 python -m pip install --upgrade pip flit
 ```
 
 5. Install the package in editable mode.
+
 ```
 flit install -s
 ```
 
 If you add dependencies to the project, you'll have to run this command again to install the new dependencies. Make sure to pin the version in `pyproject.toml`. This software is under a MIT license, so all dependencies must respect this. There is an automated test that will block contributions that violate MIT.
 
-
 6. Install [pre-commit](https://pre-commit.com/).
+
 ```
 pre-commit install
 ```
@@ -49,7 +52,8 @@ The `.pre-commit-config.yaml` file is configured to perform the following tasks 
 - Ensure your python imports are sorted consistently
 - Check for errors with flake8
 
-7. Create a new branch in your repo.
+7. Create a new branch in your repo. Using a branch other than main will help you when syncing a fork later.
+
 ```
 git checkout -b <mybranch>
 ```
@@ -59,17 +63,51 @@ git checkout -b <mybranch>
 We're excited to see what you can do. 🤩
 
 9. Commit your changes.
+
 ```
 git add .
 git commit -m "<description of changes>"
 ```
 
 10. Push your changes up to your repository.
+
 ```
 git push --set-upstream origin <mybranch>
 ```
 
 11. Open a Pull Request.
-Please provide a good description to help us understand what you've done. We are open to your suggestions and hope you'll be open to feedback if necessary.
+    Please provide a good description to help us understand what you've done. We are open to your suggestions and hope you'll be open to feedback if necessary.
 
 12. Celebrate! You've just made an open-source contribution, 🎉 and you deserve a gold star! ⭐
+
+#### Syncing a fork
+
+If you didn't commit to your main branch then you can [sync a fork with the web UI](https://docs.github.com/en/github/collaborating-with-pull-requests/working-with-forks/syncing-a-fork#syncing-a-fork-from-the-web-ui).
+
+If you did commit to the main branch then you can [merge the changes in](https://docs.github.com/en/github/collaborating-with-pull-requests/working-with-forks/syncing-a-fork#syncing-a-fork-from-the-command-line).
+
+If you want to replace your main branch with the upstream one do the following:
+
+1. Fetch upstream.
+
+```
+git fetch upstream
+```
+
+2. Checkout the main branch.
+
+```
+git checkout main
+```
+
+3. Reset your main branch using upstream.
+
+```
+git reset --hard upstream/main
+```
+
+4. Force your main branch to your origin repo.
+
+```
+git push origin master --force
+```
