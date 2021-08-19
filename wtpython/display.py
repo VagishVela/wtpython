@@ -64,7 +64,7 @@ class Sidebar(Widget):
     ) -> None:
         self.questions = questions
         super().__init__(name=name)
-        self._text: Text | None = None
+        self._text: Optional[Text] = None
 
     async def watch_index(self, value: Optional[int]) -> None:
         """If index changes, regenerate the text."""
