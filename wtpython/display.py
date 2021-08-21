@@ -7,13 +7,14 @@ from typing import Any, Iterable, Optional, Union
 from urllib.parse import urlencode
 
 from markdownify import MarkdownConverter
-from rich.console import RenderableType
+from rich.console import Console, RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
 from rich.traceback import Traceback
 from textual import events
 from textual.app import App
+from textual.geometry import Size
 from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
@@ -51,27 +52,128 @@ class PythonCodeConverter(MarkdownConverter):
         return "\n```py\n%s\n```\n" % text
 
 
+def check_overflow(contents: list[Text], console: Console, size: Size) -> bool:
+    """Simulate end result, and check if the controls are visible"""
+    page = Text(end="")
+    for i in contents:
+        page.append_text(i)
+    page.append_text(
+        Text.assemble(  # type: ignore
+            "<- Prev"
+        )
+    )
+
+    page.append_text(
+        Text.assemble(
+            " Page 0/0 "
+        )
+    )
+
+    page.append_text(
+        Text.assemble(  # type: ignore
+            "Next ->"
+        )
+    )
+
+    panel = Panel(page, title="Questions")
+
+    output = panel.__rich_console__(console, console.options.update_dimensions(size[0], size[1]))
+    output = list(output)
+    output = [i.text for i in output]  # type: ignore
+
+    output = "".join(output)  # type: ignore
+
+    return "<- Prev Page 0/0 Next ->" not in output
+
+
 class Sidebar(Widget):
     """Sidebar widget to display list of questions."""
 
     index: Reactive[int] = Reactive(0)
     highlighted: Reactive[Optional[int]] = Reactive(None)
+    page: Reactive[int] = Reactive(0)
+    pages: Reactive[list[Text]] = Reactive([])
 
     def __init__(
         self,
         name: Union[str, None],
         questions: Iterable[StackOverflowQuestion] = (),
     ) -> None:
-        self.questions = questions
         super().__init__(name=name)
         self._text: Optional[Text] = None
+        self.questions = questions
+        self.pages: list[Text] = []
+
+    def update_pages(self):  # noqa: ANN201
+        """Update the pages, and the pages_index"""
+        self.pages = []
+        current_page = Text(end="")
+        current_page_container = []
+        current_page_contents = []
+        pages_index = {}
+        pages = []
+        on_next = None
+
+        for i, question in enumerate(self.questions):
+            if on_next is not None:
+                current_page_contents.append(on_next[0])
+                current_page_container.append(on_next[1])
+                on_next = None
+
+            title = html.unescape(question.title)
+            color = 'yellow' if i == self.index else ('grey' if self.highlighted == i else 'white')
+            accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
+            item_text = Text.assemble(  # type: ignore
+                (f"#{i + 1} ", color),
+                (f"Score: {question.score}", f"{color} bold"),
+                (f"{accepted} - {title}\n\n", f"{color}"),
+                meta={"@click": f"app.set_index({i})", "index": i}
+            )
+            current_page_contents.append(item_text)
+            current_page.append_text(item_text)
+            current_page_container.append(i)
+
+            if len(current_page_contents) != 1 and check_overflow(current_page_contents, self.app.console, self.size):
+                page = Text(end="")
+                on_next = (current_page_contents.pop(), current_page_container.pop())
+                for i in current_page_contents:
+                    page.append_text(i)
+                for i in current_page_container:
+                    pages_index[i] = len(pages)
+                pages.append(page)
+                current_page_contents = []
+                current_page_container = []
+                current_page = Text(end="")
+
+        if on_next is not None:
+            current_page_contents.append(on_next[0])
+            current_page_container.append(on_next[1])
+        if len(current_page_contents) != 0:
+            page = Text(end="")
+            for i in current_page_contents:
+                page.append_text(i)
+            for i in current_page_container:
+                pages_index[i] = len(pages)
+            pages.append(page)
+
+        self.pages_index = pages_index
+        self.pages = pages
 
     async def watch_index(self, value: Optional[int]) -> None:
         """If index changes, regenerate the text."""
         self._text = None
+        self.page = self.pages_index[self.index]
+
+    async def watch_page(self, value: Optional[int]) -> None:
+        """If page changes, regenerate the text."""
+        self._text = None
 
     async def watch_highlighted(self, value: Optional[int]) -> None:
         """If highlight key changes we need to regenerate the text."""
+        self._text = None
+
+    async def on_resize(self, event: events.Resize) -> None:
+        """Regenerate text on resize"""
         self._text = None
 
     async def on_mouse_move(self, event: events.MouseMove) -> None:
@@ -84,23 +186,33 @@ class Sidebar(Widget):
 
     def get_questions(self) -> Text:
         """Format question list."""
-        text = Text(
-            no_wrap=False,
-            overflow='ellipsis',
-        )
-        for i, question in enumerate(self.questions):
-            title = html.unescape(question.title)
-            color = 'yellow' if i == self.index else ('grey' if self.highlighted == i else 'white')
-            accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
-            item_text = Text.assemble(  # type: ignore
-                (f"#{i + 1} ", color),
-                (f"Score: {question.score}", f"{color} bold"),
-                (f"{accepted} - {title}\n\n", f"{color}"),
-                meta={"@click": f"app.set_index({i})", "index": i}
-            )
-            text.append_text(item_text)
+        self.update_pages()
 
-        return text
+        page = self.pages[self.page]
+
+        page.append_text(
+            Text.assemble(  # type: ignore
+                ("<- Prev", ("grey" if self.highlighted == -1 else "white") if self.page > 0 else "#4f4f4f"),
+                meta={"@click": ("app.prev_page" if self.page > 0 else "app.bell"), "index": -1}
+            )
+        )
+
+        page.append_text(
+            Text.assemble(
+                (f" Page {self.page + 1}/{len(self.pages)} ", "yellow")
+            )
+        )
+
+        page.append_text(
+            Text.assemble(  # type: ignore
+                (
+                    "Next ->",
+                    ("grey" if self.highlighted == -2 else "white") if self.page + 1 < len(self.pages) else "#4f4f4f"),
+                meta={"@click": ("app.next_page" if self.page + 1 < len(self.pages) else "app.bell"), "index": -2}
+            )
+        )
+
+        return page
 
     def render(self) -> RenderableType:
         """Render the panel."""
@@ -175,6 +287,14 @@ class Display(App):
         self.index = index
         await self.update_body()
 
+    async def action_next_page(self) -> None:
+        """Set page"""
+        self.sidebar.page += 1
+
+    async def action_prev_page(self) -> None:
+        """Set page"""
+        self.sidebar.page -= 1
+
     async def action_next_question(self) -> None:
         """Go to the next question."""
         if self.index + 1 < len(SO_RESULTS):
@@ -233,3 +353,14 @@ class Display(App):
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar, edge="left", size=35)
         await view.dock(self.body, edge="right")
+
+
+if __name__ == "__main__":
+    from wtpython.stackoverflow import StackOverflowFinder
+    results = StackOverflowFinder().search("ZeroDivisionError: division by zero")
+    try:
+        1 / 0
+    except ZeroDivisionError as e:
+        store_results_in_module(e, results)
+
+    Display().run()
