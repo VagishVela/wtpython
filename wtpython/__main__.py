@@ -5,7 +5,6 @@ import os.path
 import runpy
 import sys
 import textwrap
-import traceback
 from typing import Optional
 
 import pyperclip
@@ -44,9 +43,10 @@ def display_app_error(exc: Exception) -> None:
 
     This should only occur if this app has an internal issue.
     """
+    trace = Trace(exc)
     print(":cry: [red]We're terribly sorry, but our app has encountered an issue.")
     print(HorizontalRule())
-    traceback.print_exception(type(exc), exc, exc.__traceback__)
+    print(trace.traceback)
     print(HorizontalRule())
     print(
         ":nerd_face: [bold][green]Please let us know by by opening a new issue at:"
