@@ -219,44 +219,51 @@ class Sidebar(Widget):
 
         page = self.pages[self.page]
 
-        height = get_height(page, self.app.console, self.size)
+        if len(self.pages) > 1:
+            height = get_height(page, self.app.console, self.size)
 
-        extra_lines = self.size.height - height - 4
+            extra_lines = self.size.height - height - 4
 
-        page.append_text(
-            Text(
-                "\n" * extra_lines
+            page.append_text(
+                Text(
+                    "\n" * extra_lines
+                )
             )
-        )
-        width = self.size.width - 2
+            width = self.size.width - 2
 
-        page.append_text(
-            Text(
-                " " * ((width - len(f"<- Prev Page {self.page}/{len(self.pages)} Next ->")) // 2)
+            page.append_text(
+                Text(
+                    " " * ((width - len(f"<- Prev Page {self.page}/{len(self.pages)} Next ->")) // 2)
+                )
             )
-        )
 
-        page.append_text(
-            Text.assemble(  # type: ignore
-                ("<- Prev", ("grey" if self.highlighted == -1 else "white") if self.page > 0 else "#4f4f4f"),
-                meta={"@click": ("app.prev_page" if self.page > 0 else "app.bell"), "index": -1}
+            page.append_text(
+                Text.assemble(  # type: ignore
+                    (
+                        "<- Prev",
+                        ("grey" if self.highlighted == -1 else "white") \
+                        if self.page > 0 else "#4f4f4f"
+                    ),
+                    meta={"@click": ("app.prev_page" if self.page > 0 else "app.bell"), "index": -1}
+                )
             )
-        )
 
-        page.append_text(
-            Text.assemble(
-                (f" Page {self.page + 1}/{len(self.pages)} ", "yellow")
+            page.append_text(
+                Text.assemble(
+                    (f" Page {self.page + 1}/{len(self.pages)} ", "yellow")
+                )
             )
-        )
 
-        page.append_text(
-            Text.assemble(  # type: ignore
-                (
-                    "Next ->",
-                    ("grey" if self.highlighted == -2 else "white") if self.page + 1 < len(self.pages) else "#4f4f4f"),
-                meta={"@click": ("app.next_page" if self.page + 1 < len(self.pages) else "app.bell"), "index": -2}
+            page.append_text(
+                Text.assemble(  # type: ignore
+                    (
+                        "Next ->",
+                        ("grey" if self.highlighted == -1 else "white") \
+                        if self.page > 0 else "#4f4f4f"
+                    ),
+                    meta={"@click": ("app.next_page" if self.page + 1 < len(self.pages) else "app.bell"), "index": -2}
+                )
             )
-        )
 
         return page
 
