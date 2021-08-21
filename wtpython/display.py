@@ -1,15 +1,16 @@
+from __future__ import annotations
+
 import html
 import traceback
 import webbrowser
-from typing import Any, List, Union
+from typing import Any, Iterable, Optional, Union
 from urllib.parse import urlencode
 
 from markdownify import MarkdownConverter
-from rich import box
-from rich.align import Align
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
+from rich.text import Text
 from rich.traceback import Traceback
 from textual import events
 from textual.app import App
@@ -20,7 +21,7 @@ from textual.widgets import Footer, Header, ScrollView
 from wtpython.settings import APP_NAME, GH_ISSUES
 from wtpython.stackoverflow import StackOverflowQuestion
 
-RAISED_EXC: Exception = None
+RAISED_EXC: Exception = Exception()
 SO_RESULTS: list[StackOverflowQuestion] = []
 
 
@@ -54,39 +55,61 @@ class Sidebar(Widget):
     """Sidebar widget to display list of questions."""
 
     index: Reactive[int] = Reactive(0)
-
-    def set_index(self, index: int) -> None:
-        """Set the current question index."""
-        self.index = index
+    highlighted: Reactive[Optional[int]] = Reactive(None)
 
     def __init__(
         self,
         name: Union[str, None],
-        questions: List[StackOverflowQuestion] = None,
+        questions: Iterable[StackOverflowQuestion] = (),
     ) -> None:
-        if questions is not None:
-            self.questions = questions
+        self.questions = questions
         super().__init__(name=name)
+        self._text: Optional[Text] = None
 
-    def get_questions(self) -> str:
+    async def watch_index(self, value: Optional[int]) -> None:
+        """If index changes, regenerate the text."""
+        self._text = None
+
+    async def watch_highlighted(self, value: Optional[int]) -> None:
+        """If highlight key changes we need to regenerate the text."""
+        self._text = None
+
+    async def on_mouse_move(self, event: events.MouseMove) -> None:
+        """Store any key we are moving over."""
+        self.highlighted = event.style.meta.get("index")
+
+    async def on_leave(self, event: events.Leave) -> None:
+        """Clear any highlight when the mouse leave the widget"""
+        self.highlighted = None
+
+    def get_questions(self) -> Text:
         """Format question list."""
-        text = ""
+        text = Text(
+            no_wrap=False,
+            overflow='ellipsis',
+        )
         for i, question in enumerate(self.questions):
             title = html.unescape(question.title)
-            color = 'yellow' if i == self.index else 'white'
+            color = 'yellow' if i == self.index else ('grey' if self.highlighted == i else 'white')
             accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
-            text += f"[{color}]#{i + 1} [bold]Score: {question.score}[/]{accepted} - {title}[/]\n\n"
+            item_text = Text.assemble(  # type: ignore
+                (f"#{i + 1} ", color),
+                (f"Score: {question.score}", f"{color} bold"),
+                (f"{accepted} - {title}\n\n", f"{color}"),
+                meta={"@click": f"app.set_index({i})", "index": i}
+            )
+            text.append_text(item_text)
 
         return text
 
     def render(self) -> RenderableType:
         """Render the panel."""
-        return Panel(
-            Align.center(self.get_questions(), vertical="top"),
-            title="Questions",
-            border_style="blue",
-            box=box.ROUNDED,
-        )
+        if self._text is None:
+            self._text = Panel(  # type: ignore
+                self.get_questions(),
+                title="Questions",
+            )
+        return self._text  # type: ignore
 
 
 class Display(App):
@@ -94,20 +117,22 @@ class Display(App):
 
     async def on_load(self, event: events.Load) -> None:
         """Key bindings."""
-        await self.bind("q,ctrl+c", "quit")
-        await self.bind("s", "view.toggle('sidebar')")
-        await self.bind("t", "show_traceback")
+        await self.bind("q", "quit", show=False)
+        await self.bind("ctrl+c", "quit", description="Quit", key_display="ctrl+c", show=True)
 
-        await self.bind("d", "open_browser")
-        await self.bind("f", "open_google")
-        await self.bind("i", "report_issue")
+        await self.bind("left", "prev_question", description="Prev Q", key_display="←")
+        await self.bind("right", "next_question", description="Next Q", key_display="→")
 
-        await self.bind("left", "prev_question")
-        await self.bind("right", "next_question")
+        await self.bind("s", "view.toggle('sidebar')", description="Show Questions")
+        await self.bind("t", "show_traceback", description="Toggle Traceback")
+
+        await self.bind("d", "open_browser", description="Open Browser")
+        await self.bind("f", "open_google", description="Google")
+        await self.bind("i", "report_issue", description="Report Issue")
 
         # Vim shortcuts...
-        await self.bind("k", "prev_question")
-        await self.bind("j", "next_question")
+        await self.bind("k", "prev_question", show=False)
+        await self.bind("j", "next_question", show=False)
 
     def create_body_text(self) -> RenderableType:
         """Generate the text to display in the ScrollView."""
@@ -144,13 +169,19 @@ class Display(App):
         self.body.y = 0
         self.body.target_y = 0
 
+    async def action_set_index(self, index: int) -> None:
+        """Set question index"""
+        self.sidebar.index = index
+        self.index = index
+        await self.update_body()
+
     async def action_next_question(self) -> None:
         """Go to the next question."""
         if self.index + 1 < len(SO_RESULTS):
-            self.viewing_traceback = False
+            self.viewing_traceback: bool = False
             self.index += 1
             await self.update_body()
-            self.sidebar.set_index(self.index)
+            self.sidebar.index = self.index
 
     async def action_prev_question(self) -> None:
         """Go to the previous question."""
@@ -158,7 +189,7 @@ class Display(App):
             self.viewing_traceback = False
             self.index -= 1
             await self.update_body()
-            self.sidebar.set_index(self.index)
+            self.sidebar.index = self.index
 
     async def action_open_browser(self) -> None:
         """Open the question in the browser."""
@@ -183,7 +214,7 @@ class Display(App):
         self.viewing_traceback = not self.viewing_traceback
         await self.update_body()
 
-    async def on_startup(self, event: events.Startup) -> None:
+    async def on_mount(self, event: events.Mount) -> None:
         """Main Program"""
         exc_msg = "".join(
             traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
@@ -195,22 +226,10 @@ class Display(App):
         self.viewing_traceback = False
         header = Header()
         footer = Footer()
-        self.sidebar = Sidebar("sidebar", SO_RESULTS)
-        self.body = ScrollView(self.create_body_text())
-
-        footer.add_key("q", "Quit")
-        footer.add_key("←", "Prev Q")
-        footer.add_key("→", "Next Q")
-        footer.add_key("s", "Show Questions")
-        footer.add_key("t", "Toggle Traceback")
-        footer.add_key("d", "Open Browser")
-        footer.add_key("f", "Google")
-        footer.add_key("i", "Report Issue")
-
-        await self.set_focus(self.body.page)
+        self.sidebar: Sidebar = Sidebar("sidebar", SO_RESULTS)
+        self.body: ScrollView = ScrollView(self.create_body_text())
 
         await view.dock(header, edge="top")
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar, edge="left", size=35)
         await view.dock(self.body, edge="right")
-        self.require_layout()

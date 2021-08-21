@@ -1,2 +1,2 @@
 num = 1
-print(num + ' one')
+print(num + ' one')  # type: ignore

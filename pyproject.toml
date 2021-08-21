@@ -14,17 +14,20 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 description-file = "README.md"
-requires-python=">=3.9"
+requires-python=">=3.7"
 requires=[
     "parse == 1.19.0",
     "requests == 2.25.1",
-    "textual == 0.1.7",
+    "textual == 0.1.9",
     "toml == 0.10.2",
-    "rich == 10.6.0",
+    "rich == 10.7.0",
     "pyperclip == 1.8.2",
     "requests-cache == 0.7.1",
     "markdownify == 0.9.2"
