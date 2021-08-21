@@ -13,8 +13,8 @@ from rich import print
 from wtpython.display import Display, store_results_in_module
 from wtpython.no_display import dump_info
 from wtpython.search_engine import SearchEngine
-from wtpython.settings import SEARCH_ENGINE, SO_MAX_RESULTS
-from wtpython.stackoverflow import StackOverflowFinder
+from wtpython.settings import SEARCH_ENGINE
+from wtpython.stackoverflow import StackOverflow
 from wtpython.trace import Trace
 
 
@@ -95,13 +95,8 @@ def main() -> None:
         return
 
     trace = Trace(exc)
-    se = SearchEngine(exc, SEARCH_ENGINE)
-    so = StackOverflowFinder(clear_cache=opts["clear_cache"])
-
-    so_results = so.search(trace.error, SO_MAX_RESULTS)
-    if len(so_results) == 0:
-        # If no results have been found, search the error class name.
-        so_results = so.search(trace.etype, SO_MAX_RESULTS)
+    engine = SearchEngine(exc, SEARCH_ENGINE)
+    so = StackOverflow.from_trace(trace=trace, clear_cache=opts["clear_cache"])
 
     print(trace.rich_traceback)
 
@@ -110,14 +105,14 @@ def main() -> None:
 
     if opts["no_display"]:
         dump_info(
-            so_results=so_results,
-            search_engine=se,
+            so_results=so,
+            search_engine=engine,
         )
     else:
         store_results_in_module(
             trace=trace,
-            so_results=so_results,
-            search_engine=se,
+            so_results=so,
+            search_engine=engine,
         )
         try:
             Display().run()

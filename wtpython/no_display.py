@@ -9,7 +9,7 @@ from rich.markdown import HorizontalRule
 
 from wtpython.search_engine import SearchEngine
 from wtpython.settings import SEARCH_ENGINE
-from wtpython.stackoverflow import StackOverflowQuestion
+from wtpython.stackoverflow import StackOverflow
 
 
 def _header(txt: str) -> str:
@@ -18,14 +18,10 @@ def _header(txt: str) -> str:
     return f"[yellow]{txt}:[/]\n"
 
 
-def _stackoverflow(so_results: list[StackOverflowQuestion]) -> None:
+def _stackoverflow(so: StackOverflow) -> None:
     """Dump Stackoverflow Questions list."""
     print(_header("Stack Overflow Results"))
-    print("\n\n".join([
-        f"{i}. {result}"
-        for i, result
-        in enumerate(so_results, 1)
-    ]))
+    print(so.no_display())
 
 
 def _searchengine(search_engine: SearchEngine) -> None:
@@ -34,7 +30,7 @@ def _searchengine(search_engine: SearchEngine) -> None:
     print(search_engine.url)
 
 
-def dump_info(so_results: list[StackOverflowQuestion], search_engine: SearchEngine) -> None:
+def dump_info(so_results: StackOverflow, search_engine: SearchEngine) -> None:
     """Dump information for no-display mode.
 
     The traceback message is dumped before display vs no-display is evaluated.

@@ -2,6 +2,7 @@
 from rich import print
 from rich.markdown import HorizontalRule
 
+from wtpython.formatters import rich_link
 from wtpython.settings import GH_ISSUES
 
 __version__ = "0.1"
@@ -14,8 +15,8 @@ class WTPythonError(Exception):
         print(HorizontalRule())
         print("[red]We're terribly sorry, but wtpython has encountered an issue.")
         print(
-            "[bold][green]Please let us know by by opening a new issue at:"
-            f"[/] [link={GH_ISSUES}]{GH_ISSUES}[/link]\n"
+            "[bold][green]Please let us know by by opening a new issue at:[/]"
+            f"{rich_link(GH_ISSUES)}"
         )
 
 
