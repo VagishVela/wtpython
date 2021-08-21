@@ -17,6 +17,7 @@ from rich.traceback import Traceback
 
 from wtpython import SearchError
 from wtpython.display import Display, store_results_in_module
+from wtpython.no_display import dump_info
 from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
 from wtpython.stackoverflow import StackOverflowFinder
 
@@ -155,14 +156,9 @@ def main() -> None:
         return
 
     print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
+
     if opts["no_display"]:
-        print(HorizontalRule())
-        print("[yellow]Stack Overflow Results:[/]\n")
-        print("\n\n".join([
-            f"{i}. {result}"
-            for i, result
-            in enumerate(so_results, 1)
-        ]))
+        dump_info(so_results=so_results)
     else:
         store_results_in_module(exc, so_results)
         try:
