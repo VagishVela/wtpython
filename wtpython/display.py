@@ -3,6 +3,7 @@ from __future__ import annotations
 import html
 import traceback
 import webbrowser
+from copy import copy
 from typing import Any, Iterable, Optional, Union
 from urllib.parse import urlencode
 
@@ -84,6 +85,34 @@ def check_overflow(contents: list[Text], console: Console, size: Size) -> bool:
     output = "".join(output)  # type: ignore
 
     return "<- Prev Page 0/0 Next ->" not in output
+
+
+def get_height(text: Text, console: Console, size: Size) -> int:
+    """Get the height of a rendered text panel"""
+    panel = Panel(text)
+
+    output = panel.__rich_console__(console, console.options.update_dimensions(size[0], size[1] + 50))
+    output = list(output)
+    output = [i.text for i in output]  # type: ignore
+    output = "".join(output).split("\n")  # type: ignore
+
+    output.pop(-1)
+    output.pop(-1)
+    output.pop(0)
+
+    output.reverse()
+    blank_line = output[0]
+    output2 = copy(output)
+
+    for i in output:
+        if i == blank_line:
+            output2.pop(0)
+        else:
+            break
+
+    output2.reverse()
+
+    return len(output2)
 
 
 class Sidebar(Widget):
@@ -189,6 +218,23 @@ class Sidebar(Widget):
         self.update_pages()
 
         page = self.pages[self.page]
+
+        height = get_height(page, self.app.console, self.size)
+
+        extra_lines = self.size.height - height - 4
+
+        page.append_text(
+            Text(
+                "\n" * extra_lines
+            )
+        )
+        width = self.size.width - 2
+
+        page.append_text(
+            Text(
+                " " * ((width - len(f"<- Prev Page {self.page}/{len(self.pages)} Next ->")) // 2)
+            )
+        )
 
         page.append_text(
             Text.assemble(  # type: ignore
