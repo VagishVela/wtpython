@@ -16,7 +16,6 @@ from rich.markdown import HorizontalRule
 from rich.traceback import Traceback
 
 from wtpython import SearchError
-from wtpython.display import Display, store_results_in_module
 from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
 from wtpython.stackoverflow import StackOverflowFinder
 
@@ -155,7 +154,15 @@ def main() -> None:
         return
 
     print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
-    if opts["no_display"]:
+
+    no_textual = False
+    try:
+        from wtpython.display import Display, store_results_in_module
+    except ModuleNotFoundError:
+        print("[underline red bold flashing] Textual not found, defaulting to no display mode.")
+        no_textual = True
+
+    if opts["no_display"] or no_textual:
         print(HorizontalRule())
         print("[yellow]Stack Overflow Results:[/]\n")
         print("\n\n".join([
