@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import html
-import traceback
 import webbrowser
 from typing import Any, Iterable, Optional, Union
 
@@ -10,7 +9,6 @@ from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
-from rich.traceback import Traceback
 from textual import events
 from textual.app import App
 from textual.views import DockView
@@ -20,14 +18,15 @@ from textual.widgets import Footer, Header, ScrollView
 from wtpython.search_engine import SearchEngine
 from wtpython.settings import APP_NAME, GH_ISSUES, SEARCH_ENGINE
 from wtpython.stackoverflow import StackOverflowQuestion
+from wtpython.trace import Trace
 
-RAISED_EXC: Exception = Exception()
+TRACE: Trace = Trace(Exception())
 SO_RESULTS: list[StackOverflowQuestion] = []
 SEARCH: SearchEngine = SearchEngine(Exception(), SEARCH_ENGINE)
 
 
 def store_results_in_module(
-    raised_exc: Exception,
+    trace: Trace,
     so_results: list[StackOverflowQuestion],
     search_engine: SearchEngine
 ) -> None:
@@ -39,9 +38,9 @@ def store_results_in_module(
 
     These values are used in `Display.on_startup`
     """
-    global SO_RESULTS, RAISED_EXC, SEARCH
+    global SO_RESULTS, TRACE, SEARCH
     SO_RESULTS = so_results
-    RAISED_EXC = raised_exc
+    TRACE = trace
     SEARCH = search_engine
 
 
@@ -143,11 +142,7 @@ class Display(App):
         converter = PythonCodeConverter()
 
         if self.viewing_traceback:
-            return Traceback.from_exception(
-                type(RAISED_EXC),
-                RAISED_EXC,
-                RAISED_EXC.__traceback__,
-            )
+            return TRACE.rich_traceback
         if SO_RESULTS == []:
             return "Could not find any results. Sorry!"
 
@@ -215,10 +210,7 @@ class Display(App):
 
     async def on_mount(self, event: events.Mount) -> None:
         """Main Program"""
-        exc_msg = "".join(
-            traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
-        ).strip()
-        self.title = f"{APP_NAME} | {exc_msg}"
+        self.title = f"{APP_NAME} | {TRACE.error}"
 
         view = await self.push_view(DockView())
         self.index = 0

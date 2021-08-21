@@ -6,14 +6,11 @@ import runpy
 import sys
 import textwrap
 import traceback
-from pathlib import Path
-from types import TracebackType
 from typing import Optional
 
 import pyperclip
 from rich import print
 from rich.markdown import HorizontalRule
-from rich.traceback import Traceback
 
 from wtpython import SearchError
 from wtpython.display import Display, store_results_in_module
@@ -21,28 +18,7 @@ from wtpython.no_display import dump_info
 from wtpython.search_engine import SearchEngine
 from wtpython.settings import GH_ISSUES, SEARCH_ENGINE, SO_MAX_RESULTS
 from wtpython.stackoverflow import StackOverflowFinder
-
-
-def trim_exception_traceback(tb: Optional[TracebackType]) -> Optional[TracebackType]:
-    """
-    Trim the traceback to remove extra frames
-
-    Because of the way we are currently running the code, any traceback
-    created during the execution of the application will be include the
-    stack frames of this application. This function removes all the stack
-    frames from the beginning of the traceback until we stop seeing `runpy`.
-    """
-    seen_runpy = False
-    while tb is not None:
-        cur = tb.tb_frame
-        filename = Path(cur.f_code.co_filename).name
-        if filename == "runpy.py":
-            seen_runpy = True
-        elif seen_runpy and filename != "runpy.py":
-            break
-        tb = tb.tb_next
-
-    return tb
+from wtpython.trace import Trace
 
 
 def run(args: list[str]) -> Optional[Exception]:
@@ -58,7 +34,6 @@ def run(args: list[str]) -> Optional[Exception]:
         runpy.run_path(args[0], run_name="__main__")
     except Exception as e:
         exc = e
-        exc.__traceback__ = trim_exception_traceback(exc.__traceback__)
     finally:
         sys.argv = stashed
     return exc
@@ -137,27 +112,23 @@ def main() -> None:
     if exc is None:  # No exceptions were raised by user's program
         return
 
-    error = "".join(traceback.format_exception_only(type(exc), exc)).strip()
-    error_lines = error.split("\n")
-    if len(error_lines) > 1:
-        error = error_lines[-1]
-
-    if opts["copy_error"]:
-        pyperclip.copy(error)
-
-    so = StackOverflowFinder(clear_cache=opts["clear_cache"])
+    trace = Trace(exc)
     se = SearchEngine(exc, SEARCH_ENGINE)
+    so = StackOverflowFinder(clear_cache=opts["clear_cache"])
 
     try:
-        so_results = so.search(error, SO_MAX_RESULTS)
+        so_results = so.search(trace.error, SO_MAX_RESULTS)
         if len(so_results) == 0:
             # If no results have been found, search the error class name.
-            so_results = so.search(error.split(" ")[0].strip(":"), SO_MAX_RESULTS)
+            so_results = so.search(trace.etype, SO_MAX_RESULTS)
     except SearchError as e:
         display_app_error(e)
         return
 
-    print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
+    print(trace.rich_traceback)
+
+    if opts["copy_error"]:
+        pyperclip.copy(trace.error)
 
     if opts["no_display"]:
         dump_info(
@@ -166,7 +137,7 @@ def main() -> None:
         )
     else:
         store_results_in_module(
-            raised_exc=exc,
+            trace=trace,
             so_results=so_results,
             search_engine=se,
         )
