@@ -9,13 +9,11 @@ from typing import Optional
 
 import pyperclip
 from rich import print
-from rich.markdown import HorizontalRule
 
-from wtpython import SearchError
 from wtpython.display import Display, store_results_in_module
 from wtpython.no_display import dump_info
 from wtpython.search_engine import SearchEngine
-from wtpython.settings import GH_ISSUES, SEARCH_ENGINE, SO_MAX_RESULTS
+from wtpython.settings import SEARCH_ENGINE, SO_MAX_RESULTS
 from wtpython.stackoverflow import StackOverflowFinder
 from wtpython.trace import Trace
 
@@ -36,22 +34,6 @@ def run(args: list[str]) -> Optional[Exception]:
     finally:
         sys.argv = stashed
     return exc
-
-
-def display_app_error(exc: Exception) -> None:
-    """Display error message and request user to report an issue.
-
-    This should only occur if this app has an internal issue.
-    """
-    trace = Trace(exc)
-    print(":cry: [red]We're terribly sorry, but our app has encountered an issue.")
-    print(HorizontalRule())
-    print(trace.traceback)
-    print(HorizontalRule())
-    print(
-        ":nerd_face: [bold][green]Please let us know by by opening a new issue at:"
-        f"[/] [link={GH_ISSUES}]{GH_ISSUES}[/link]"
-    )
 
 
 def parse_arguments() -> dict:
@@ -116,14 +98,10 @@ def main() -> None:
     se = SearchEngine(exc, SEARCH_ENGINE)
     so = StackOverflowFinder(clear_cache=opts["clear_cache"])
 
-    try:
-        so_results = so.search(trace.error, SO_MAX_RESULTS)
-        if len(so_results) == 0:
-            # If no results have been found, search the error class name.
-            so_results = so.search(trace.etype, SO_MAX_RESULTS)
-    except SearchError as e:
-        display_app_error(e)
-        return
+    so_results = so.search(trace.error, SO_MAX_RESULTS)
+    if len(so_results) == 0:
+        # If no results have been found, search the error class name.
+        so_results = so.search(trace.etype, SO_MAX_RESULTS)
 
     print(trace.rich_traceback)
 
@@ -144,4 +122,4 @@ def main() -> None:
         try:
             Display().run()
         except Exception as e:
-            display_app_error(e)
+            print(e)
