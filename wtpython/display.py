@@ -4,7 +4,6 @@ import html
 import traceback
 import webbrowser
 from typing import Any, Iterable, Optional, Union
-from urllib.parse import urlencode
 
 from markdownify import MarkdownConverter
 from rich.console import RenderableType
@@ -18,15 +17,19 @@ from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
-from wtpython.settings import APP_NAME, GH_ISSUES
+from wtpython.search_engine import SearchEngine
+from wtpython.settings import APP_NAME, GH_ISSUES, SEARCH_ENGINE
 from wtpython.stackoverflow import StackOverflowQuestion
 
 RAISED_EXC: Exception = Exception()
 SO_RESULTS: list[StackOverflowQuestion] = []
+SEARCH: SearchEngine = SearchEngine(Exception(), SEARCH_ENGINE)
 
 
 def store_results_in_module(
-    raised_exc: Exception, so_results: list[StackOverflowQuestion]
+    raised_exc: Exception,
+    so_results: list[StackOverflowQuestion],
+    search_engine: SearchEngine
 ) -> None:
     """Unfortunate hack since there is an error with passing values to Display.
 
@@ -36,9 +39,10 @@ def store_results_in_module(
 
     These values are used in `Display.on_startup`
     """
-    global SO_RESULTS, RAISED_EXC
+    global SO_RESULTS, RAISED_EXC, SEARCH
     SO_RESULTS = so_results
     RAISED_EXC = raised_exc
+    SEARCH = search_engine
 
 
 class PythonCodeConverter(MarkdownConverter):
@@ -127,7 +131,7 @@ class Display(App):
         await self.bind("t", "show_traceback", description="Toggle Traceback")
 
         await self.bind("d", "open_browser", description="Open Browser")
-        await self.bind("f", "open_google", description="Google")
+        await self.bind("f", "open_search_engine", description="Search Engine")
         await self.bind("i", "report_issue", description="Report Issue")
 
         # Vim shortcuts...
@@ -200,14 +204,9 @@ class Display(App):
         """Take user to submit new issue on Github."""
         webbrowser.open(GH_ISSUES)
 
-    async def action_open_google(self) -> None:
-        """Open the browser with google search results."""
-        exc_msg = "".join(
-            traceback.format_exception_only(type(RAISED_EXC), RAISED_EXC)
-        ).strip()
-        params = {"q": f"python {exc_msg}"}
-        url = "https://www.google.com/search?" + urlencode(params)
-        webbrowser.open(url)
+    async def action_open_search_engine(self) -> None:
+        """Open the browser with search engine results."""
+        webbrowser.open(SEARCH.url)
 
     async def action_show_traceback(self) -> None:
         """Show the traceback."""

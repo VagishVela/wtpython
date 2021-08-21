@@ -18,7 +18,8 @@ from rich.traceback import Traceback
 from wtpython import SearchError
 from wtpython.display import Display, store_results_in_module
 from wtpython.no_display import dump_info
-from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
+from wtpython.search_engine import SearchEngine
+from wtpython.settings import GH_ISSUES, SEARCH_ENGINE, SO_MAX_RESULTS
 from wtpython.stackoverflow import StackOverflowFinder
 
 
@@ -145,6 +146,7 @@ def main() -> None:
         pyperclip.copy(error)
 
     so = StackOverflowFinder(clear_cache=opts["clear_cache"])
+    se = SearchEngine(exc, SEARCH_ENGINE)
 
     try:
         so_results = so.search(error, SO_MAX_RESULTS)
@@ -158,9 +160,16 @@ def main() -> None:
     print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
 
     if opts["no_display"]:
-        dump_info(so_results=so_results)
+        dump_info(
+            so_results=so_results,
+            search_engine=se,
+        )
     else:
-        store_results_in_module(exc, so_results)
+        store_results_in_module(
+            raised_exc=exc,
+            so_results=so_results,
+            search_engine=se,
+        )
         try:
             Display().run()
         except Exception as e:

@@ -11,6 +11,7 @@ APP_NAME = "WTPython"
 SO_FILTER = "!6VvPDzQ)xXOrL"
 SO_MAX_RESULTS = 10
 SO_API = "https://api.stackexchange.com/2.3"
+SEARCH_ENGINE = 'Google'
 
 REQUEST_CACHE_LOCATION = Path.home() / Path(".wtpython_cache")
 REQUEST_CACHE_DURATION = 60 * 60 * 24   # One day (in seconds)
