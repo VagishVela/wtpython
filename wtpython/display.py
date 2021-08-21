@@ -217,7 +217,15 @@ class Sidebar(Widget):
         """Format question list."""
         self.update_pages()
 
-        page = self.pages[self.page]
+        try:
+            page = self.pages[self.page]
+        except IndexError:
+            for i in range(1, self.page + 1):
+                try:
+                    page = self.pages[self.page - i]
+                except IndexError:
+                    continue
+                break
 
         if len(self.pages) > 1:
             height = get_height(page, self.app.console, self.size)
