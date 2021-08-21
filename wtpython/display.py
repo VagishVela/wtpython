@@ -258,7 +258,7 @@ class Sidebar(Widget):
                 Text.assemble(  # type: ignore
                     (
                         "Next ->",
-                        ("grey" if self.highlighted == -1 else "white") \
+                        ("grey" if self.highlighted == -2 else "white") \
                         if self.page > 0 else "#4f4f4f"
                     ),
                     meta={"@click": ("app.next_page" if self.page + 1 < len(self.pages) else "app.bell"), "index": -2}
