@@ -5,79 +5,49 @@ import os.path
 import runpy
 import sys
 import textwrap
-import traceback
-from pathlib import Path
-from types import TracebackType
 from typing import Optional
 
 import pyperclip
 from rich import print
-from rich.markdown import HorizontalRule
-from rich.traceback import Traceback
 
-from wtpython import SearchError
-from wtpython.settings import GH_ISSUES, SO_MAX_RESULTS
-from wtpython.stackoverflow import StackOverflowFinder
+from wtpython.backends import SearchEngine, StackOverflow, Trace
+from wtpython.displays import TextualDisplay, dump_info
+from wtpython.displays.textual_display import store_results_in_module
 
 
-def trim_exception_traceback(tb: Optional[TracebackType]) -> Optional[TracebackType]:
-    """
-    Trim the traceback to remove extra frames
-
-    Because of the way we are currently running the code, any traceback
-    created during the execution of the application will be include the
-    stack frames of this application. This function removes all the stack
-    frames from the beginning of the traceback until we stop seeing `runpy`.
-    """
-    seen_runpy = False
-    while tb is not None:
-        cur = tb.tb_frame
-        filename = Path(cur.f_code.co_filename).name
-        if filename == "runpy.py":
-            seen_runpy = True
-        elif seen_runpy and filename != "runpy.py":
-            break
-        tb = tb.tb_next
-
-    return tb
-
-
-def run(args: list[str]) -> Optional[Exception]:
+def run(args: list[str]) -> Optional[Trace]:
     """Execute desired program.
 
     This will set sys.argv as the desired program would receive them and execute the script.
     If there are no errors, the program will function just like using python, but formatted with Rich.
     If there are errors, this will return the exception object.
+
+    Args:
+        args: The arguments to pass to python. args[0] should be the script to run.
+
+    Returns:
+        The exception object if there are errors, otherwise None.
     """
     stashed, sys.argv = sys.argv, args
     exc = None
     try:
         runpy.run_path(args[0], run_name="__main__")
     except Exception as e:
-        exc = e
-        exc.__traceback__ = trim_exception_traceback(exc.__traceback__)
+        exc = Trace(e)
     finally:
         sys.argv = stashed
     return exc
 
 
-def display_app_error(exc: Exception) -> None:
-    """Display error message and request user to report an issue.
-
-    This should only occur if this app has an internal issue.
-    """
-    print(":cry: [red]We're terribly sorry, but our app has encountered an issue.")
-    print(HorizontalRule())
-    traceback.print_exception(type(exc), exc, exc.__traceback__)
-    print(HorizontalRule())
-    print(
-        ":nerd_face: [bold][green]Please let us know by by opening a new issue at:"
-        f"[/] [link={GH_ISSUES}]{GH_ISSUES}[/link]"
-    )
-
-
 def parse_arguments() -> dict:
-    """Parse arguments and store them in wtpython.arguments.args"""
+    """Parse sys.argv arguments.
+
+    Args:
+        None
+
+    Returns:
+        A dictionary of arguments.
+    """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent("""
@@ -127,52 +97,40 @@ def parse_arguments() -> dict:
 
 
 def main() -> None:
-    """Run the application."""
-    opts = parse_arguments()
-    exc = run(opts['args'])
+    """Run the application.
 
-    if exc is None:  # No exceptions were raised by user's program
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    opts: dict = parse_arguments()
+    trace: Optional[Trace] = run(opts['args'])
+
+    if trace is None:  # No exceptions were raised by user's program
         return
 
-    error = "".join(traceback.format_exception_only(type(exc), exc)).strip()
-    error_lines = error.split("\n")
-    if len(error_lines) > 1:
-        error = error_lines[-1]
+    engine = SearchEngine(trace)
+    so = StackOverflow.from_trace(trace=trace, clear_cache=opts["clear_cache"])
+
+    print(trace.rich_traceback)
 
     if opts["copy_error"]:
-        pyperclip.copy(error)
+        pyperclip.copy(trace.error)
 
-    so = StackOverflowFinder(clear_cache=opts["clear_cache"])
-
-    try:
-        so_results = so.search(error, SO_MAX_RESULTS)
-        if len(so_results) == 0:
-            # If no results have been found, search the error class name.
-            so_results = so.search(error.split(" ")[0].strip(":"), SO_MAX_RESULTS)
-    except SearchError as e:
-        display_app_error(e)
-        return
-
-    print(Traceback.from_exception(type(exc), exc, exc.__traceback__))
-
-    no_textual = False
-    try:
-        from wtpython.display import Display, store_results_in_module
-    except ModuleNotFoundError:
-        print("[underline red bold flashing] Textual not found, defaulting to no display mode.")
-        no_textual = True
-
-    if opts["no_display"] or no_textual:
-        print(HorizontalRule())
-        print("[yellow]Stack Overflow Results:[/]\n")
-        print("\n\n".join([
-            f"{i}. {result}"
-            for i, result
-            in enumerate(so_results, 1)
-        ]))
+    if opts["no_display"]:
+        dump_info(
+            so_results=so,
+            search_engine=engine,
+        )
     else:
-        store_results_in_module(exc, so_results)
+        store_results_in_module(
+            trace=trace,
+            so_results=so,
+            search_engine=engine,
+        )
         try:
-            Display().run()
+            TextualDisplay().run()
         except Exception as e:
-            display_app_error(e)
+            print(e)
