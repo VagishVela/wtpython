@@ -21,6 +21,12 @@ def run(args: list[str]) -> Optional[Trace]:
     This will set sys.argv as the desired program would receive them and execute the script.
     If there are no errors, the program will function just like using python, but formatted with Rich.
     If there are errors, this will return the exception object.
+
+    Args:
+        args: The arguments to pass to python. args[0] should be the script to run.
+
+    Returns:
+        The exception object if there are errors, otherwise None.
     """
     stashed, sys.argv = sys.argv, args
     exc = None
@@ -34,7 +40,14 @@ def run(args: list[str]) -> Optional[Trace]:
 
 
 def parse_arguments() -> dict:
-    """Parse arguments and store them in wtpython.arguments.args"""
+    """Parse sys.argv arguments.
+
+    Args:
+        None
+
+    Returns:
+        A dictionary of arguments.
+    """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent("""
@@ -84,9 +97,16 @@ def parse_arguments() -> dict:
 
 
 def main() -> None:
-    """Run the application."""
-    opts = parse_arguments()
-    trace = run(opts['args'])
+    """Run the application.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    opts: dict = parse_arguments()
+    trace: Optional[Trace] = run(opts['args'])
 
     if trace is None:  # No exceptions were raised by user's program
         return

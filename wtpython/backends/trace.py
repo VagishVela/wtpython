@@ -10,7 +10,11 @@ class Trace:
     """Class for handling the formatting and display of tracebacks."""
 
     def __init__(self, exc: Exception) -> None:
-        """Store key parts to traceback."""
+        """Store key parts to traceback.
+
+        Args:
+            exc: The exception to be formatted.
+        """
         self._etype = type(exc)
         self._value = exc
         self._tb = Trace.trim_exception_traceback(exc.__traceback__)
@@ -24,6 +28,12 @@ class Trace:
         created during the execution of the application will be include the
         stack frames of this application. This function removes all the stack
         frames from the beginning of the traceback until we stop seeing `runpy`.
+
+        Args:
+            tb: The traceback to trim.
+
+        Returns:
+            The trimmed traceback.
         """
         seen_runpy = False
         while tb is not None:

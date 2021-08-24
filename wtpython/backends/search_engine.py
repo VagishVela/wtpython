@@ -9,6 +9,15 @@ class SearchEngine:
     """Class for handling urls for search engines."""
 
     def __init__(self, trace: Trace, engine: str = SEARCH_ENGINE):
+        """Search engine object.
+
+        Args:
+            trace: wtpython Trace object.
+            engine: Search engine to use.
+
+        Returns:
+            SearchEngine object.
+        """
         self.query = trace.error
         self.engine = engine
 

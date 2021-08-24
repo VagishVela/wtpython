@@ -14,7 +14,14 @@ class CachedResponse:
     cache_key = 'wtpython'
 
     def __init__(self, clear_cache: bool = False) -> None:
-        """Initialize the session and cache."""
+        """Initialize the session and cache.
+
+        Args:
+            clear_cache: If True, clear the cache.
+
+        Returns:
+            None
+        """
         self.session = CachedSession(
             self.cache_key,
             backend=FileCache(REQUEST_CACHE_LOCATION),

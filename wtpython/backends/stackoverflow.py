@@ -4,7 +4,7 @@ from textwrap import dedent
 
 from rich.text import Text
 
-from wtpython import SearchError
+from wtpython.exceptions import SearchError
 from wtpython.formatters import PythonCodeConverter, rich_link
 from wtpython.settings import SO_MAX_RESULTS
 
@@ -21,12 +21,16 @@ class StackOverflowAnswer:
     """
 
     def __init__(self, data: dict) -> None:
-        """Store the json for the answer."""
+        """Store the json for the answer.
+
+        Args:
+            data: The json data for the answer provided by the API.
+        """
         self.data = data
 
     @property
     def answer_accepted(self) -> str:
-        """Return a string indicating if the answer is accepted."""
+        """String indicating if the answer is accepted."""
         return ' ✔️ ' if self.data['is_accepted'] else ''
 
     def display(self) -> str:
@@ -51,14 +55,22 @@ class StackOverflowQuestion:
     """
 
     def __init__(self, ix: int, data: dict) -> None:
-        """Store the json for the question."""
+        """Store the json for the question.
+
+        Args:
+            ix: The index of the question in the list of questions.
+            data: The json data for the question provided by the API.
+
+        Returns:
+            None
+        """
         self.ix = ix
         self.data = data
         self.answers: list[StackOverflowAnswer] = []
 
     @property
     def num_answers(self) -> str:
-        """Return a string indicating the number of answers."""
+        """Human readable string indicating the number of answers."""
         if self.data['answer_count'] == 1:
             return '1 Answer'
         else:
@@ -66,16 +78,23 @@ class StackOverflowQuestion:
 
     @property
     def answer_accepted(self) -> str:
-        """Return a string indicating if the question has an accepted answer."""
+        """String indicating if the question has an accepted answer."""
         return ' ✔️ ' if self.data['is_answered'] else ''
 
     @property
     def url(self) -> str:
-        """Return the url for the question."""
+        """The url for the question."""
         return self.data['link']
 
     def sidebar(self, ix: int) -> Text:
-        """Render information for sidebar mode."""
+        """Render information for sidebar mode.
+
+        Args:
+            ix: The index of the active question. Used to determine highlighting.
+
+        Returns:
+            A rich text object for the sidebar.
+        """
         color = 'yellow' if ix == self.ix else 'white'
 
         text = Text.assemble(
@@ -142,6 +161,13 @@ class StackOverflow(CachedResponse):
 
         self.index is used to track the current question. Initialization
         will search for questions and fetch the associated answers.
+
+        Args:
+            query: The query to search for.
+            clear_cache: If True, clear the cache before searching.
+
+        Returns:
+            StackOverflow object.
         """
         super().__init__(clear_cache=clear_cache)
         self._query = query
@@ -164,6 +190,13 @@ class StackOverflow(CachedResponse):
         Will search for questions based on the full error message. If no results,
         this will fall back on just the error type. If no results, this will raise
         a SearchError.
+
+        Args:
+            trace: The wtpython Trace object.
+            clear_cache: If True, clear the cache before searching.
+
+        Returns:
+            StackOverflow object.
         """
         for query in [trace.error, trace.etype]:
             instance = cls(query, clear_cache)
