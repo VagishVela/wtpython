@@ -1,14 +1,14 @@
-import traceback
 from urllib.parse import urlencode
+
+from wtpython.settings import SEARCH_ENGINE
+from wtpython.trace import Trace
 
 
 class SearchEngine:
     """Class for handling urls for search engines."""
 
-    def __init__(self, exc: Exception, engine: str):
-        self.query = "".join(
-            traceback.format_exception_only(type(exc), exc)
-        ).strip()
+    def __init__(self, trace: Trace, engine: str = SEARCH_ENGINE):
+        self.query = trace.error
         self.engine = engine
 
     @property

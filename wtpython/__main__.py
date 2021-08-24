@@ -13,7 +13,6 @@ from rich import print
 from wtpython.display import Display, store_results_in_module
 from wtpython.no_display import dump_info
 from wtpython.search_engine import SearchEngine
-from wtpython.settings import SEARCH_ENGINE
 from wtpython.stackoverflow import StackOverflow
 from wtpython.trace import Trace
 
@@ -30,7 +29,7 @@ def run(args: list[str]) -> Optional[Exception]:
     try:
         runpy.run_path(args[0], run_name="__main__")
     except Exception as e:
-        exc = e
+        exc = Trace(e)
     finally:
         sys.argv = stashed
     return exc
@@ -89,13 +88,12 @@ def parse_arguments() -> dict:
 def main() -> None:
     """Run the application."""
     opts = parse_arguments()
-    exc = run(opts['args'])
+    trace = run(opts['args'])
 
-    if exc is None:  # No exceptions were raised by user's program
+    if trace is None:  # No exceptions were raised by user's program
         return
 
-    trace = Trace(exc)
-    engine = SearchEngine(exc, SEARCH_ENGINE)
+    engine = SearchEngine(trace)
     so = StackOverflow.from_trace(trace=trace, clear_cache=opts["clear_cache"])
 
     print(trace.rich_traceback)
