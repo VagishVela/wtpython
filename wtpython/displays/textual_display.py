@@ -13,10 +13,8 @@ from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
-from wtpython.search_engine import SearchEngine
+from wtpython.backends import SearchEngine, StackOverflow, Trace
 from wtpython.settings import APP_NAME, GH_ISSUES
-from wtpython.stackoverflow import StackOverflow
-from wtpython.trace import Trace
 
 TRACE: Trace = Trace(Exception())
 SO_RESULTS: StackOverflow = StackOverflow('python')
@@ -84,7 +82,7 @@ class Sidebar(Widget):
         return self._text
 
 
-class Display(App):
+class TextualDisplay(App):
     """WTPython application."""
 
     async def on_load(self, event: events.Load) -> None:

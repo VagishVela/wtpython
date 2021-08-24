@@ -7,9 +7,8 @@ control the order in which they are displayed.
 from rich import print
 from rich.markdown import HorizontalRule
 
-from wtpython.search_engine import SearchEngine
+from wtpython.backends import SearchEngine, StackOverflow
 from wtpython.settings import SEARCH_ENGINE
-from wtpython.stackoverflow import StackOverflow
 
 
 def _header(txt: str) -> str:

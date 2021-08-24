@@ -1,7 +1,8 @@
 from urllib.parse import urlencode
 
 from wtpython.settings import SEARCH_ENGINE
-from wtpython.trace import Trace
+
+from .trace import Trace
 
 
 class SearchEngine:

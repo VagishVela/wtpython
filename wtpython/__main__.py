@@ -10,11 +10,9 @@ from typing import Optional
 import pyperclip
 from rich import print
 
-from wtpython.display import Display, store_results_in_module
-from wtpython.no_display import dump_info
-from wtpython.search_engine import SearchEngine
-from wtpython.stackoverflow import StackOverflow
-from wtpython.trace import Trace
+from wtpython.backends import SearchEngine, StackOverflow, Trace
+from wtpython.displays import TextualDisplay, dump_info
+from wtpython.displays.textual_display import store_results_in_module
 
 
 def run(args: list[str]) -> Optional[Trace]:
@@ -113,6 +111,6 @@ def main() -> None:
             search_engine=engine,
         )
         try:
-            Display().run()
+            TextualDisplay().run()
         except Exception as e:
             print(e)
