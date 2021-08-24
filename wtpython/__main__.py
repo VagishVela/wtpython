@@ -17,7 +17,7 @@ from wtpython.stackoverflow import StackOverflow
 from wtpython.trace import Trace
 
 
-def run(args: list[str]) -> Optional[Exception]:
+def run(args: list[str]) -> Optional[Trace]:
     """Execute desired program.
 
     This will set sys.argv as the desired program would receive them and execute the script.

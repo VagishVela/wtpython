@@ -1,5 +1,6 @@
 import sys
 from contextlib import contextmanager
+from typing import Iterator
 
 import pytest
 
@@ -8,7 +9,7 @@ from wtpython.__main__ import parse_arguments
 
 
 @contextmanager
-def update_argv(args: list) -> None:
+def update_argv(args: list) -> Iterator[None]:
     """Update sys.argv"""
     orig, sys.argv = sys.argv, args
     yield

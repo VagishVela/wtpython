@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import html
 import webbrowser
-from typing import Any, Iterable, Optional, Union
+from typing import Optional
 
-from markdownify import MarkdownConverter
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -16,19 +14,17 @@ from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
 
 from wtpython.search_engine import SearchEngine
-from wtpython.settings import APP_NAME, GH_ISSUES, SEARCH_ENGINE
-from wtpython.stackoverflow import StackOverflowQuestion
+from wtpython.settings import APP_NAME, GH_ISSUES
+from wtpython.stackoverflow import StackOverflow
 from wtpython.trace import Trace
 
 TRACE: Trace = Trace(Exception())
-SO_RESULTS: list[StackOverflowQuestion] = []
-SEARCH: SearchEngine = SearchEngine(Exception(), SEARCH_ENGINE)
+SO_RESULTS: StackOverflow = StackOverflow('python')
+SEARCH: SearchEngine = SearchEngine(Trace(Exception()))
 
 
 def store_results_in_module(
-    trace: Trace,
-    so_results: list[StackOverflowQuestion],
-    search_engine: SearchEngine
+    trace: Trace, so_results: StackOverflow, search_engine: SearchEngine
 ) -> None:
     """Unfortunate hack since there is an error with passing values to Display.
 
@@ -44,16 +40,6 @@ def store_results_in_module(
     SEARCH = search_engine
 
 
-class PythonCodeConverter(MarkdownConverter):
-    """Custom MarkdownConverter to add python syntax highlighting."""
-
-    def convert_pre(self, el: Any, text: str, convert_as_inline: bool) -> str:
-        """Add python syntax to all <pre> elements."""
-        if not text:
-            return ""
-        return "\n```py\n%s\n```\n" % text
-
-
 class Sidebar(Widget):
     """Sidebar widget to display list of questions."""
 
@@ -62,10 +48,10 @@ class Sidebar(Widget):
 
     def __init__(
         self,
-        name: Union[str, None],
-        questions: Iterable[StackOverflowQuestion] = (),
+        name: Optional[str],
+        so: StackOverflow,
     ) -> None:
-        self.questions = questions
+        self.so: StackOverflow = so
         super().__init__(name=name)
         self._text: Optional[Text] = None
 
@@ -85,34 +71,17 @@ class Sidebar(Widget):
         """Clear any highlight when the mouse leave the widget"""
         self.highlighted = None
 
-    def get_questions(self) -> Text:
-        """Format question list."""
-        text = Text(
-            no_wrap=False,
-            overflow='ellipsis',
-        )
-        for i, question in enumerate(self.questions):
-            title = html.unescape(question.title)
-            color = 'yellow' if i == self.index else ('grey' if self.highlighted == i else 'white')
-            accepted = '✔️ ' if any(ans.is_accepted for ans in question.answers) else ''
-            item_text = Text.assemble(  # type: ignore
-                (f"#{i + 1} ", color),
-                (f"Score: {question.score}", f"{color} bold"),
-                (f"{accepted} - {title}\n\n", f"{color}"),
-                meta={"@click": f"app.set_index({i})", "index": i}
-            )
-            text.append_text(item_text)
-
-        return text
-
     def render(self) -> RenderableType:
         """Render the panel."""
         if self._text is None:
-            self._text = Panel(  # type: ignore
-                self.get_questions(),
-                title="Questions",
-            )
-        return self._text  # type: ignore
+            text = Text(no_wrap=False, overflow="ellipsis")
+
+            for i, item in enumerate(self.so.sidebar()):
+                item.apply_meta({"@click": f"app.set_index({i})", "index": i})
+                text.append_text(item)
+
+            self._text = Panel(text, title=self.so.sidebar_title)
+        return self._text
 
 
 class Display(App):
@@ -121,12 +90,14 @@ class Display(App):
     async def on_load(self, event: events.Load) -> None:
         """Key bindings."""
         await self.bind("q", "quit", show=False)
-        await self.bind("ctrl+c", "quit", description="Quit", key_display="ctrl+c", show=True)
+        await self.bind(
+            "ctrl+c", "quit", description="Quit", key_display="ctrl+c", show=True
+        )
 
-        await self.bind("left", "prev_question", description="Prev Q", key_display="←")
-        await self.bind("right", "next_question", description="Next Q", key_display="→")
+        await self.bind("left", "prev_question", description="Prev", key_display="←")
+        await self.bind("right", "next_question", description="Next", key_display="→")
 
-        await self.bind("s", "view.toggle('sidebar')", description="Show Questions")
+        await self.bind("s", "view.toggle('sidebar')", description="Sidebar")
         await self.bind("t", "show_traceback", description="Toggle Traceback")
 
         await self.bind("d", "open_browser", description="Open Browser")
@@ -139,27 +110,11 @@ class Display(App):
 
     def create_body_text(self) -> RenderableType:
         """Generate the text to display in the ScrollView."""
-        converter = PythonCodeConverter()
-
         if self.viewing_traceback:
             return TRACE.rich_traceback
-        if SO_RESULTS == []:
-            return "Could not find any results. Sorry!"
 
-        question: StackOverflowQuestion = SO_RESULTS[self.index]
-        text = ""
-        text += f"# {question.title} | Score: {question.score}\n"
-        text += f"{converter.convert(question.body)}\n"
-        for i, answer in enumerate(question.answers, 1):
-            text += (
-                f"---\n### Answer #{i} | Score: {answer.score}"
-                f"{' ✔️' if answer.is_accepted else ''}"
-                "\n---\n "
-            )
-            text += converter.convert(answer.body)
-            text += "\n"
-
-        output = Markdown(text, inline_code_lexer="python")
+        SO_RESULTS.index = self.index
+        output = Markdown(SO_RESULTS.display(), inline_code_lexer="python")
         return output
 
     async def update_body(self) -> None:
@@ -192,8 +147,7 @@ class Display(App):
 
     async def action_open_browser(self) -> None:
         """Open the question in the browser."""
-        if SO_RESULTS != []:
-            webbrowser.open(SO_RESULTS[self.index].link)
+        webbrowser.open(SO_RESULTS.active_url)
 
     async def action_report_issue(self) -> None:
         """Take user to submit new issue on Github."""

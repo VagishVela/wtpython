@@ -4,6 +4,7 @@ from textwrap import dedent
 
 from requests_cache import CachedSession
 from requests_cache.backends import FileCache
+from rich.text import Text
 
 from wtpython import SearchError
 from wtpython.formatters import PythonCodeConverter, rich_link
@@ -11,20 +12,6 @@ from wtpython.settings import (
     REQUEST_CACHE_DURATION, REQUEST_CACHE_LOCATION, SO_MAX_RESULTS
 )
 from wtpython.trace import Trace
-
-SO_API = "https://api.stackexchange.com/2.3"
-# https://api.stackexchange.com/docs/filters
-# To create a custom filter, use https://api.stackexchange.com/docs/create-filter
-# This filter returns the question or answer body in addition to meta data.
-SO_FILTER = "!6VvPDzQ)xXOrL"
-# These parameters are applied to all question and answer queries.
-DEFAULT_PARAMS: dict[str, str] = {
-    "site": "stackoverflow",
-    "filter": SO_FILTER,
-    "order": "desc",
-}
-# List of items to add to all queries.
-DEFAULT_QUERIES = ["python"]
 
 
 class CachedResponse:
@@ -108,15 +95,19 @@ class StackOverflowQuestion:
         """Return a string indicating if the question has an accepted answer."""
         return ' ✔️ ' if self.data['is_answered'] else ''
 
-    def sidebar(self, ix: int) -> str:
+    @property
+    def url(self) -> str:
+        """Return the url for the question."""
+        return self.data['link']
+
+    def sidebar(self, ix: int) -> Text:
         """Render information for sidebar mode."""
         color = 'yellow' if ix == self.ix else 'white'
-        text = (
-            f"[{color}]"
-            f"#{self.ix + 1} "
-            f"[bold]Score {self.data['score']}[/]"
-            f"{self.answer_accepted} - {self.data['title']}"
-            f"[/]"
+
+        text = Text.assemble(
+            (f"#{self.ix + 1} ", color),
+            (f"Score {self.data['score']}", f"{color} bold"),
+            (f"{self.answer_accepted} - {self.data['title']}", color),
         )
         return text
 
@@ -144,22 +135,53 @@ class StackOverflowQuestion:
 class StackOverflow(CachedResponse):
     """Manage results from Stack Overflow.
 
+    This class can be instantiated by passing a query to the constructor,
+    or the classmethod `from_trace` will accept a Trace object.
+
     This class is responsible for the api calls and managing the results.
+    The StackOverflowQuestion and StackOverflowAnswer classes should not
+    be called outside of this class.
+
+    The main public functions of this class are:
+        sidebar: render information for textual sidebar. Item with self.index
+            will be highlighted.
+        display: render information for textual scrollview. This will display
+            the question and all answers for the question with self.index.
+        no_display: render information for no-display mode. Dumps all questions.
+
+    Filter: https://api.stackexchange.com/docs/filters
+    Create a filter: https://api.stackexchange.com/docs/create-filter
+    This filter returns the question or answer body in addition to meta data.
     """
 
+    api = "https://api.stackexchange.com/2.3"
     cache_key = 'stackoverflow'
+    sidebar_title = "Questions"
+    default_params: dict[str, str] = {
+        "site": "stackoverflow",
+        "filter": "!6VvPDzQ)xXOrL",
+        "order": "desc",
+    }
 
-    def __init__(self, query: str, clear_cache: bool = False) -> None:
+    def __init__(self, query: str = '', clear_cache: bool = False) -> None:
         """Search stackoverflow api for the defined query.
 
         self.index is used to track the current question. Initialization
         will search for questions and fetch the associated answers.
         """
         super().__init__(clear_cache=clear_cache)
-        self.index = 0
         self._query = query
-        self.questions = [StackOverflowQuestion(ix, item) for ix, item in enumerate(self.get_questions())]
-        self.get_answers()
+        self.index = 0
+        self.questions = [StackOverflowQuestion(ix, item) for ix, item in enumerate(self._get_questions())]
+        self._get_answers()
+
+    def __len__(self) -> int:
+        """Return the number of questions found."""
+        return len(self.questions)
+
+    def __bool__(self) -> bool:
+        """Return whether the query has results."""
+        return bool(self.questions)
 
     @classmethod
     def from_trace(cls, trace: Trace, clear_cache: bool = False) -> StackOverflow:
@@ -168,36 +190,32 @@ class StackOverflow(CachedResponse):
         Will search for questions based on the full error message. If no results,
         this will fall back on just the error type. If no results, this will raise
         a SearchError.
-
-        Since we are caching the results, the return statements should not
-        warrant extra api requests.
         """
-        questions = cls(trace.error, clear_cache).get_questions()
-        if questions:
-            return cls(trace.error, clear_cache)
-
-        questions = cls(trace.etype, clear_cache).get_questions()
-        if questions:
-            cls(trace.etype, clear_cache)
+        for query in [trace.error, trace.etype]:
+            instance = cls(query, clear_cache)
+            if instance:
+                return instance
 
         raise SearchError(f"No StackOverflow results for {trace.error}")
 
-    def get_questions(self) -> dict:
+    def _get_questions(self) -> dict:
         """Get StackOverflow questions.
 
         https://api.stackexchange.com/docs/advanced-search
+        defaults is a list of items to include with every request.
         """
-        endpoint = f"{SO_API}/search/advanced"
+        endpoint = f"{StackOverflow.api}/search/advanced"
+        defaults = ['python']
         params = {
-            "q": ' '.join([*DEFAULT_QUERIES, self._query]),
+            "q": ' '.join([*defaults, self._query]),
             "answers": 1,
             "pagesize": SO_MAX_RESULTS,
-            **DEFAULT_PARAMS,
+            **StackOverflow.default_params,
         }
         response = self.session.get(endpoint, params=params)
         return response.json()['items']
 
-    def get_answers(self) -> None:
+    def _get_answers(self) -> None:
         """Get answers for this question.
 
         https://api.stackexchange.com/docs/answers-on-questions
@@ -208,10 +226,10 @@ class StackOverflow(CachedResponse):
             str(q.data['question_id'])
             for q in self.questions
         ])
-        endpoint = f"{SO_API}/questions/{question_ids}/answers"
+        endpoint = f"{StackOverflow.api}/questions/{question_ids}/answers"
         params = {
             "sort": "activity",
-            **DEFAULT_PARAMS,
+            **StackOverflow.default_params,
         }
         response = self.session.get(endpoint, params=params)
         answers = response.json()['items']
@@ -223,21 +241,30 @@ class StackOverflow(CachedResponse):
                 if answer['question_id'] == question.data['question_id']
             ]
 
-    def sidebar(self) -> list[str]:
+    @property
+    def active_url(self) -> str:
+        """Return the url for the current question."""
+        if self.questions:
+            return self.questions[self.index].url
+        return "https://stackoverflow.com/search?q={self._query}"
+
+    def sidebar(self) -> list[Text]:
         """Render information for sidebar mode.
 
         consolodate sidebar displays for all objects. ix is used to determine
         if the item is the current one.
         """
-        return [item.sidebar(self.index) for item in self.questions]
+        return [q.sidebar(self.index) for q in self.questions]
 
     def display(self) -> str:
         """Render information for display mode.
 
         Get the display for the current item.
         """
-        return self.questions[self.index].display()
+        if self.questions:
+            return self.questions[self.index].display()
+        return "Sorry, we could not find any results."
 
     def no_display(self) -> str:
         """Render information for no-display mode."""
-        return "\n".join([item.no_display() for item in self.questions])
+        return "\n".join([q.no_display() for q in self.questions])
