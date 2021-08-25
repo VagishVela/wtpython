@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 from textwrap import dedent
 from typing import Optional
 
@@ -38,13 +39,12 @@ class StackOverflowAnswer:
         """Render information for display mode."""
         converter = PythonCodeConverter()
 
-        text = dedent(f"""
-        ---
-        ### Answer Score {self.data['score']}{self.answer_accepted}
-        ---
-
-        {converter.convert(self.data['body'])}
-        """)
+        text = '\n'.join([
+            "---",
+            f"### Answer: Score {self.data['score']}{self.answer_accepted}",
+            "---",
+            converter.convert(self.data['body']),
+        ])
         return text.lstrip()
 
 
@@ -87,6 +87,11 @@ class StackOverflowQuestion:
         """The url for the question."""
         return self.data['link']
 
+    @property
+    def title(self) -> str:
+        """Unescaped HTML title."""
+        return html.unescape(self.data['title'])
+
     def sidebar(self, ix: int, highlighted: Optional[int]) -> Text:
         """Render information for sidebar mode.
 
@@ -102,7 +107,7 @@ class StackOverflowQuestion:
         text = Text.assemble(
             (f"#{self.ix + 1} ", color),
             (f"Score {self.data['score']}", f"{color} bold"),
-            (f"{self.answer_accepted} - {self.data['title']}", color),
+            (f"{self.answer_accepted} - {self.title}", color),
         )
         return text
 
@@ -110,10 +115,12 @@ class StackOverflowQuestion:
         """Render information for display mode."""
         converter = PythonCodeConverter()
 
-        text = dedent(f"""
-        Score {self.data['score']} | {self.data['title']}
-        {converter.convert(self.data['body'])}
-        """)
+        text = '\n'.join([
+            "---",
+            f"## Score {self.data['score']} | {self.title}",
+            "---",
+            converter.convert(self.data['body'])
+        ])
         for answer in self.answers:
             text += answer.display()
 
