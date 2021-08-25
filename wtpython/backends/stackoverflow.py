@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from textwrap import dedent
+from typing import Optional
 
 from rich.text import Text
 
@@ -86,16 +87,17 @@ class StackOverflowQuestion:
         """The url for the question."""
         return self.data['link']
 
-    def sidebar(self, ix: int) -> Text:
+    def sidebar(self, ix: int, highlighted: Optional[int]) -> Text:
         """Render information for sidebar mode.
 
         Args:
             ix: The index of the active question. Used to determine highlighting.
+            highlighted: The index of the hovered question. Used to determine highlighting.
 
         Returns:
             A rich text object for the sidebar.
         """
-        color = 'yellow' if ix == self.ix else 'white'
+        color = 'yellow' if ix == self.ix else ('grey' if highlighted == self.ix else 'white')
 
         text = Text.assemble(
             (f"#{self.ix + 1} ", color),
@@ -172,6 +174,7 @@ class StackOverflow(CachedResponse):
         super().__init__(clear_cache=clear_cache)
         self._query = query
         self.index = 0
+        self.highlighted = None
         self.questions = [StackOverflowQuestion(ix, item) for ix, item in enumerate(self._get_questions())]
         self._get_answers()
 
@@ -261,7 +264,7 @@ class StackOverflow(CachedResponse):
         consolodate sidebar displays for all objects. ix is used to determine
         if the item is the current one.
         """
-        return [q.sidebar(self.index) for q in self.questions]
+        return [q.sidebar(self.index, self.highlighted) for q in self.questions]
 
     def display(self) -> str:
         """Render information for display mode.

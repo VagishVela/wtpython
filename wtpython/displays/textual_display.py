@@ -51,7 +51,7 @@ class Sidebar(Widget):
     ) -> None:
         self.so: StackOverflow = so
         super().__init__(name=name)
-        self._text: Optional[Text] = None
+        self._text: Optional[Panel] = None
 
     async def watch_index(self, value: Optional[int]) -> None:
         """If index changes, regenerate the text."""
@@ -60,6 +60,7 @@ class Sidebar(Widget):
     async def watch_highlighted(self, value: Optional[int]) -> None:
         """If highlight key changes we need to regenerate the text."""
         self._text = None
+        self.so.highlighted = self.highlighted
 
     async def on_mouse_move(self, event: events.MouseMove) -> None:
         """Store any key we are moving over."""
@@ -75,8 +76,9 @@ class Sidebar(Widget):
             text = Text(no_wrap=False, overflow="ellipsis")
 
             for i, item in enumerate(self.so.sidebar()):
-                item.apply_meta({"@click": f"app.set_index({i})", "index": i})
+                item.apply_meta({"@click": f"app.set_index({i})", "index": i})  # type: ignore
                 text.append_text(item)
+                text.append_text(Text("\n\n"))
 
             self._text = Panel(text, title=self.so.sidebar_title)
         return self._text
