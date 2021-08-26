@@ -1,3 +1,4 @@
+"""Manage information related to the traceback object."""
 import traceback
 from pathlib import Path
 from types import TracebackType
@@ -22,7 +23,7 @@ class Trace:
     @staticmethod
     def trim_exception_traceback(tb: Optional[TracebackType]) -> Optional[TracebackType]:
         """
-        Trim the traceback to remove extra frames
+        Trim the traceback to remove extra frames.
 
         Because of the way we are currently running the code, any traceback
         created during the execution of the application will be include the

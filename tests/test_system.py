@@ -1,3 +1,4 @@
+"""Tests for the core of WTPython."""
 import sys
 from contextlib import contextmanager
 from typing import Iterator
@@ -10,14 +11,14 @@ from wtpython.__main__ import parse_arguments
 
 @contextmanager
 def update_argv(args: list) -> Iterator[None]:
-    """Update sys.argv"""
+    """Update sys.argv."""
     orig, sys.argv = sys.argv, args
     yield
     sys.argv = orig
 
 
 def test_version() -> None:
-    """Test Version is Correct"""
+    """Test Version is Correct."""
     assert wtpython.__version__ == "0.1"
 
 
@@ -28,8 +29,8 @@ def test_default_parse_args() -> None:
         parsed = parse_arguments()
 
     assert parsed.get('no-display') is None
-    assert parsed.get('copy_error') == False
-    assert parsed.get('clear_cache') == False
+    assert parsed.get('copy_error') is False
+    assert parsed.get('clear_cache') is False
     assert parsed.get('args') == [__file__]
 
 
@@ -41,7 +42,7 @@ def test_no_display_option(args: list) -> None:
     """Test that the no-display option is set."""
     with update_argv(args):
         parsed = parse_arguments()
-    assert parsed.get('no_display') == True
+    assert parsed.get('no_display') is True
 
 
 @pytest.mark.parametrize("args", [
@@ -52,7 +53,7 @@ def test_copy_error_option(args: list) -> None:
     """Test that the copy-error option is set."""
     with update_argv(args):
         parsed = parse_arguments()
-    assert parsed.get('copy_error') == True
+    assert parsed.get('copy_error') is True
 
 
 @pytest.mark.parametrize("args", [
@@ -62,7 +63,7 @@ def test_clear_cache_option(args: list) -> None:
     """Test that the clear-cache option is set."""
     with update_argv(args):
         parsed = parse_arguments()
-    assert parsed.get('clear_cache') == True
+    assert parsed.get('clear_cache') is True
 
 
 @pytest.mark.parametrize("args", [

@@ -1,3 +1,7 @@
+"""Tools for caching requests to external APIs.
+
+Caching is used to reduce the number of requests to external APIs.
+"""
 from requests_cache import CachedSession
 from requests_cache.backends import FileCache
 

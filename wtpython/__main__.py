@@ -1,3 +1,8 @@
+"""Main WTPython file.
+
+This file parses the command line arguments, runs your program,
+and then displays solutions for errors if they occur.
+"""
 from __future__ import annotations
 
 import argparse

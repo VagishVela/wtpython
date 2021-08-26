@@ -1,3 +1,4 @@
+"""Custom Exceptions for WTPython."""
 from rich import print
 from rich.markdown import HorizontalRule
 
