@@ -1,4 +1,4 @@
-"""Manage information related to the traceback object."""
+"""Manages information related to the traceback object."""
 import traceback
 from pathlib import Path
 from types import TracebackType
@@ -23,10 +23,10 @@ class Trace:
     @staticmethod
     def trim_exception_traceback(tb: Optional[TracebackType]) -> Optional[TracebackType]:
         """
-        Trim the traceback to remove extra frames.
+        Trims the traceback to remove extra frames.
 
         Because of the way we are currently running the code, any traceback
-        created during the execution of the application will be include the
+        created during the execution of the application will include the
         stack frames of this application. This function removes all the stack
         frames from the beginning of the traceback until we stop seeing `runpy`.
 

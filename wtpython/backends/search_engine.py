@@ -1,4 +1,4 @@
-"""Manage data relevant to search engines."""
+"""Manages data relevant to search engines."""
 from urllib.parse import urlencode
 
 from wtpython.settings import SEARCH_ENGINE
@@ -13,8 +13,8 @@ class SearchEngine:
         """Search engine object.
 
         Args:
-            trace: wtpython Trace object.
-            engine: Search engine to use.
+            trace: wtpython trace object.
+            engine: search engine to use.
 
         Returns:
             SearchEngine object.
@@ -24,7 +24,7 @@ class SearchEngine:
 
     @property
     def url(self) -> str:
-        """URL formatted for desired search engine."""
+        """Url formatted for desired search engine."""
         endpoints = {
             "Google": "https://www.google.com/search?",
             "DuckDuckGo": "https://duckduckgo.com/?",

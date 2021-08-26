@@ -1,4 +1,4 @@
-"""Manage data from StackOverflow."""
+"""Manages data from StackOverflow."""
 from __future__ import annotations
 
 import html
@@ -136,21 +136,21 @@ class StackOverflowQuestion:
 
 
 class StackOverflow(CachedResponse):
-    """Manage results from Stack Overflow.
+    """Manage results from StackOverflow.
 
-    This class can be instantiated by passing a query to the constructor,
-    or the classmethod `from_trace` will accept a Trace object.
+    This class can be instantiated by passing a query to the constructor
+    or the classmethod `from_trace` will accept a trace object.
 
-    This class is responsible for the api calls and managing the results.
+    This class is responsible for the API calls and managing the results.
     The StackOverflowQuestion and StackOverflowAnswer classes should not
     be called outside of this class.
 
     The main public functions of this class are:
-        sidebar: render information for textual sidebar. Item with self.index
+        sidebar: renders information for textual sidebar. Items with self.index
             will be highlighted.
-        display: render information for textual scrollview. This will display
+        display: renders information for textual scroll view. This will display
             the question and all answers for the question with self.index.
-        no_display: render information for no-display mode. Dumps all questions.
+        no_display: renders information for no-display mode. Dumps all questions.
 
     Filter: https://api.stackexchange.com/docs/filters
     Create a filter: https://api.stackexchange.com/docs/create-filter
@@ -167,7 +167,7 @@ class StackOverflow(CachedResponse):
     }
 
     def __init__(self, query: str = '', clear_cache: bool = False) -> None:
-        """Search stackoverflow api for the defined query.
+        """Search StackOverflow API for the defined query.
 
         self.index is used to track the current question. Initialization
         will search for questions and fetch the associated answers.

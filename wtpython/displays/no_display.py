@@ -1,7 +1,7 @@
 """
 This module works to dump the information for the no-display option.
 
-Each datasource should have it's own function while `dump_info` will
+Each data source should have its own function while `dump_info` will
 control the order in which they are displayed.
 """
 from rich import print
@@ -25,7 +25,7 @@ def _header(txt: str) -> str:
 
 
 def _stackoverflow(so: StackOverflow) -> None:
-    """Dump Stackoverflow Questions list.
+    """Dump Stackoverflow questions list.
 
     Args:
         so: Stackoverflow object.
@@ -53,7 +53,7 @@ def _searchengine(search_engine: SearchEngine) -> None:
 def dump_info(so_results: StackOverflow, search_engine: SearchEngine) -> None:
     """Dump information for no-display mode.
 
-    The traceback message is dumped before display vs no-display is evaluated.
+    The traceback message is dumped before display vs. no-display is evaluated.
 
     Args:
         so_results: Stackoverflow object.
