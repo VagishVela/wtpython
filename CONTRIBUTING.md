@@ -49,7 +49,7 @@ The `.pre-commit-config.yaml` file is configured to perform the following tasks 
 - Ensure a single new line on each file
 - Ensure trailing white spaces are removed
 - Ensure `noqa` annotations have specific codes
-- Ensure your python imports are sorted consistently
+- Ensure your Python imports are sorted consistently
 - Check for errors with flake8
 
 7. Create a new branch in your repo. Using a branch other than main will help you when syncing a fork later.

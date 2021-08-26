@@ -1,4 +1,4 @@
-"""Custom Exceptions for WTPython."""
+"""Custom exceptions for wtpython."""
 from rich import print
 from rich.markdown import HorizontalRule
 
@@ -7,9 +7,9 @@ from wtpython.settings import GH_ISSUES
 
 
 class WTPythonError(Exception):
-    """Generic Error for wtpython.
+    """Generic error for wtpython.
 
-    For any internal application error, this will surround the traceback
+    For any internal application error this will surround the traceback
     with horizontal rules and print a message to the user.
     """
 
@@ -28,4 +28,4 @@ class WTPythonError(Exception):
 
 
 class SearchError(WTPythonError):
-    """Custom Error for Searching for External Data."""
+    """Custom error for searching for external data."""

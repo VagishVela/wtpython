@@ -1,4 +1,4 @@
-"""TUI Using Textual."""
+"""TUI using Textual."""
 from __future__ import annotations
 
 import webbrowser
@@ -18,18 +18,18 @@ from wtpython.backends import SearchEngine, StackOverflow, Trace
 from wtpython.settings import APP_NAME, GH_ISSUES
 
 TRACE: Trace = Trace(Exception())
-SO_RESULTS: StackOverflow = StackOverflow('python')
+SO_RESULTS: StackOverflow = StackOverflow("python")
 SEARCH: SearchEngine = SearchEngine(Trace(Exception()))
 
 
 def store_results_in_module(
     trace: Trace, so_results: StackOverflow, search_engine: SearchEngine
 ) -> None:
-    """Unfortunate hack since there is an error with passing values to Display.
+    """Error with passing values to display; this is our temporary solution.
 
-    Display inherits App and somwhere in the App.__init__ flow, values are
+    Display inherits App and somewhere in the App.__init__ flow values are
     overwritten. These global variables are used in lieu of passing to
-    Display for now.
+    display for now.
 
     These values are used in `Display.on_startup`
     """
@@ -55,7 +55,7 @@ class Sidebar(Widget):
         self._text: Optional[Panel] = None
 
     async def watch_index(self, value: Optional[int]) -> None:
-        """If index changes, regenerate the text."""
+        """If index changes, regenerates the text."""
         self._text = None
 
     async def watch_highlighted(self, value: Optional[int]) -> None:
@@ -68,7 +68,7 @@ class Sidebar(Widget):
         self.highlighted = event.style.meta.get("index")
 
     async def on_leave(self, event: events.Leave) -> None:
-        """Clear any highlight when the mouse leave the widget."""
+        """Clear any highlights when the mouse leaves the widget."""
         self.highlighted = None
 
     def render(self) -> RenderableType:
@@ -86,7 +86,7 @@ class Sidebar(Widget):
 
 
 class TextualDisplay(App):
-    """WTPython application."""
+    """wtpython application."""
 
     async def on_load(self, event: events.Load) -> None:
         """Key bindings."""
@@ -110,7 +110,7 @@ class TextualDisplay(App):
         await self.bind("j", "next_question", show=False)
 
     def create_body_text(self) -> RenderableType:
-        """Generate the text to display in the ScrollView."""
+        """Generate the text to display in the scroll view."""
         if self.viewing_traceback:
             return TRACE.rich_traceback
 
@@ -119,7 +119,7 @@ class TextualDisplay(App):
         return output
 
     async def update_body(self) -> None:
-        """Update the ScrollView body."""
+        """Update the scroll view body."""
         await self.body.update(self.create_body_text())
         self.body.y = 0
         self.body.target_y = 0
@@ -164,7 +164,7 @@ class TextualDisplay(App):
         await self.update_body()
 
     async def on_mount(self, event: events.Mount) -> None:
-        """Execute Main Program."""
+        """Execute main program."""
         self.title = f"{APP_NAME} | {TRACE.error}"
 
         view = await self.push_view(DockView())

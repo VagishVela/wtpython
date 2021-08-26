@@ -1,4 +1,4 @@
-"""Main WTPython file.
+"""Main wtpython file.
 
 This file parses the command line arguments, runs your program,
 and then displays solutions for errors if they occur.
@@ -23,12 +23,12 @@ from wtpython.displays.textual_display import store_results_in_module
 def run(args: list[str]) -> Optional[Trace]:
     """Execute desired program.
 
-    This will set sys.argv as the desired program would receive them and execute the script.
-    If there are no errors, the program will function just like using python, but formatted with Rich.
-    If there are errors, this will return the exception object.
+    This will set sys.argv as the desired program would receive it and executes the script.
+    If there are no errors the program will function just like using Python but formatted with Rich.
+    If there are errors this will return the exception object.
 
     Args:
-        args: The arguments to pass to python. args[0] should be the script to run.
+        args: The arguments to pass to Python. args[0] should be the script to run.
 
     Returns:
         The exception object if there are errors, otherwise None.
@@ -55,11 +55,13 @@ def parse_arguments() -> dict:
     """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=textwrap.dedent("""
-        additional information:
-          wtpython acts as a substitute for python. Simply add `wt` to the beginning
+        epilog=textwrap.dedent(
+            """
+        Additional information:
+          wtpython acts as a substitute for Python. Simply add `wt` to the beginning
           of the line and call your program with all the appropriate arguments:
-                    $ wtpython [OPTIONS] <script.py> <arguments>"""),
+                    $ wtpython [OPTIONS] <script.py> <arguments>"""
+        ),
     )
 
     parser.add_argument(
@@ -90,11 +92,11 @@ def parse_arguments() -> dict:
 
     opts = vars(parser.parse_args())
 
-    if not opts['args']:
+    if not opts["args"]:
         parser.error("Please specify a script to run")
         sys.exit(1)
 
-    if not os.path.isfile(opts['args'][0]):
+    if not os.path.isfile(opts["args"][0]):
         parser.error(f"{opts['args'][0]} is not a file")
         sys.exit(1)
 
@@ -111,7 +113,7 @@ def main() -> None:
         None
     """
     opts: dict = parse_arguments()
-    trace: Optional[Trace] = run(opts['args'])
+    trace: Optional[Trace] = run(opts["args"])
 
     if trace is None:  # No exceptions were raised by user's program
         return

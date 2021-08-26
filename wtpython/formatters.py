@@ -21,10 +21,10 @@ def rich_link(url: str, text: Optional[str] = None) -> str:
 
 
 class PythonCodeConverter(MarkdownConverter):
-    """Custom MarkdownConverter to add python syntax highlighting."""
+    """Overrides MarkdownConverter to ensure Python syntax highlighting."""
 
     def convert_pre(self, el: Any, text: str, convert_as_inline: bool) -> str:
-        """Add python syntax to all <pre> elements.
+        """Add Python syntax to all <pre> elements.
 
         Args:
             el: The element to convert.
@@ -32,7 +32,7 @@ class PythonCodeConverter(MarkdownConverter):
             convert_as_inline: Whether to convert the element as inline.
 
         Returns:
-            text of pre element primed for python syntax highlighting.
+            text of <pre> element primed for Python syntax highlighting.
         """
         if not text:
             return ""

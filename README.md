@@ -14,7 +14,7 @@ Find solutions to your Python errors without leaving your IDE or terminal!
 
 Ever have Python throw an error traceback longer than a CVS receipt 🧾? Is it dizzying to read through a bunch of cryptic lines trying to figure out exactly what caused the error? Do you look at the traceback and go, "WHAT THE ....."?😕
 
-What the Python (`wtpython`) is a simple terminal user interface that allows you to explore relevant answers on Stackoverflow without leaving your terminal or IDE. When you get an error, all you have to do is swap `python` for `wtpython`. When your code hits an error, you'll see a textual interface for exploring relevant answers allowing you to stay focused and ship faster! 🚀
+What the Python (`wtpython`) is a simple terminal user interface that allows you to explore relevant answers on StackOverflow without leaving your terminal or IDE. When you get an error, all you have to do is swap `python` for `wtpython`. When your code hits an error, you'll see a textual interface for exploring relevant answers allowing you to stay focused and ship faster! 🚀
 
 `wtpython` is styled using [Rich](https://rich.readthedocs.io/en/stable/) and the interface is developed using [Textual](https://github.com/willmcgugan/textual).
 
@@ -49,7 +49,7 @@ $ wtpython example/division_by_zero_error.py
 
 ![usage](https://raw.githubusercontent.com/what-the-python/wtpython/main/docs/_images/Usage.gif)
 
-If you want results but don't want to go into the interface, just pass the `-n` flag to see the Rich formatted traceback and links to the most relevant  questions on Stackoverflow.
+If you want results but don't want to go into the interface, just pass the `-n` flag to see the Rich formatted traceback and links to the most relevant  questions on StackOverflow.
 
 ![no-display-usage](https://raw.githubusercontent.com/what-the-python/wtpython/main/docs/_images/No%20Display%20Usage.gif)
 
@@ -63,7 +63,7 @@ Flag | Action
 ---|---
 `-n` or `--no-display` | Do not enter the interactive session, just print the error and give me the links!
 `-c` or `--copy-error` | Add the error message to your clipboard so you can look for answers yourself (it's okay, we understand).
-`--clear-cache` | `wtpython` will cache results of each error message for up to a day. This helps prevent you from getting throttled by the Stackoverflow API.
+`--clear-cache` | `wtpython` will cache results of each error message for up to a day. This helps prevent you from getting throttled by the StackOverflow API.
 
 ### Interface Hotkeys
 
