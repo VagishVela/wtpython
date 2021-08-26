@@ -9,7 +9,7 @@ from .trace import Trace
 class SearchEngine:
     """Class for handling urls for search engines."""
 
-    def __init__(self, trace: Trace, engine: str = SEARCH_ENGINE):
+    def __init__(self, trace: Trace, engine: str = SEARCH_ENGINE) -> None:
         """Search engine object.
 
         Args:
