@@ -1,2 +1,2 @@
-"""Exmple file that raises ZeroDivisionError."""
+"""Example file that raises ZeroDivisionError."""
 1 / 0
