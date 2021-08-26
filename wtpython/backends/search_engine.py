@@ -1,3 +1,4 @@
+"""Manage data relevant to search engines."""
 from urllib.parse import urlencode
 
 from wtpython.settings import SEARCH_ENGINE

@@ -1,3 +1,4 @@
+"""Utility classes for formatting text."""
 from typing import Any, Optional
 
 from markdownify import MarkdownConverter

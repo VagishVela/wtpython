@@ -1,3 +1,4 @@
+"""Default Settings for WTPython."""
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent

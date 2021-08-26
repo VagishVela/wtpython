@@ -1,3 +1,4 @@
+"""Manage data from StackOverflow."""
 from __future__ import annotations
 
 import html
@@ -32,7 +33,7 @@ class StackOverflowAnswer:
 
     @property
     def answer_accepted(self) -> str:
-        """String indicating if the answer is accepted."""
+        """Indicate if the answer is accepted."""
         return ' ✔️ ' if self.data['is_accepted'] else ''
 
     def display(self) -> str:
@@ -79,12 +80,12 @@ class StackOverflowQuestion:
 
     @property
     def answer_accepted(self) -> str:
-        """String indicating if the question has an accepted answer."""
+        """Indicate if the question has an accepted answer."""
         return ' ✔️ ' if self.data['is_answered'] else ''
 
     @property
     def url(self) -> str:
-        """The url for the question."""
+        """Return url for the question."""
         return self.data['link']
 
     @property

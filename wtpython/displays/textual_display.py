@@ -1,3 +1,4 @@
+"""TUI Using Textual."""
 from __future__ import annotations
 
 import webbrowser
@@ -67,7 +68,7 @@ class Sidebar(Widget):
         self.highlighted = event.style.meta.get("index")
 
     async def on_leave(self, event: events.Leave) -> None:
-        """Clear any highlight when the mouse leave the widget"""
+        """Clear any highlight when the mouse leave the widget."""
         self.highlighted = None
 
     def render(self) -> RenderableType:
@@ -124,7 +125,7 @@ class TextualDisplay(App):
         self.body.target_y = 0
 
     async def action_set_index(self, index: int) -> None:
-        """Set question index"""
+        """Set question index."""
         self.sidebar.index = index
         self.index = index
         await self.update_body()
@@ -163,7 +164,7 @@ class TextualDisplay(App):
         await self.update_body()
 
     async def on_mount(self, event: events.Mount) -> None:
-        """Main Program"""
+        """Execute Main Program."""
         self.title = f"{APP_NAME} | {TRACE.error}"
 
         view = await self.push_view(DockView())

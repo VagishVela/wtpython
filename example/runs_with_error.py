@@ -1,3 +1,4 @@
+"""Example to show WTPython runs your code normally until an Exception is raised."""
 import sys
 import time
 
