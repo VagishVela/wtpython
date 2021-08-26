@@ -29,8 +29,8 @@ def test_default_parse_args() -> None:
         parsed = parse_arguments()
 
     assert parsed.get('no-display') is None
-    assert parsed.get('copy_error') == False
-    assert parsed.get('clear_cache') == False
+    assert parsed.get('copy_error') is False
+    assert parsed.get('clear_cache') is False
     assert parsed.get('args') == [__file__]
 
 
@@ -42,7 +42,7 @@ def test_no_display_option(args: list) -> None:
     """Test that the no-display option is set."""
     with update_argv(args):
         parsed = parse_arguments()
-    assert parsed.get('no_display') == True
+    assert parsed.get('no_display') is True
 
 
 @pytest.mark.parametrize("args", [
@@ -53,7 +53,7 @@ def test_copy_error_option(args: list) -> None:
     """Test that the copy-error option is set."""
     with update_argv(args):
         parsed = parse_arguments()
-    assert parsed.get('copy_error') == True
+    assert parsed.get('copy_error') is True
 
 
 @pytest.mark.parametrize("args", [
@@ -63,7 +63,7 @@ def test_clear_cache_option(args: list) -> None:
     """Test that the clear-cache option is set."""
     with update_argv(args):
         parsed = parse_arguments()
-    assert parsed.get('clear_cache') == True
+    assert parsed.get('clear_cache') is True
 
 
 @pytest.mark.parametrize("args", [
