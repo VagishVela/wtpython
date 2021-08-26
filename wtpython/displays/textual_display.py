@@ -9,10 +9,10 @@ from rich.panel import Panel
 from rich.text import Text
 from textual import events
 from textual.app import App
+from textual.geometry import Size
 from textual.views import DockView
 from textual.widget import Reactive, Widget
 from textual.widgets import Footer, Header, ScrollView
-from textual.geometry import Size
 
 from wtpython.backends import SearchEngine, StackOverflow, Trace
 from wtpython.settings import APP_NAME, GH_ISSUES
@@ -39,35 +39,6 @@ def store_results_in_module(
     SEARCH = search_engine
 
 
-
-
-def get_height(text: Text, console: Console, size: Size) -> int:
-    """Get the height of a rendered text panel"""
-    panel = Panel(text)
-
-    output = panel.__rich_console__(console, console.options.update_dimensions(size[0], size[1] + 50))
-    output = list(output)
-    output = [i.text for i in output]  # type: ignore
-    output = "".join(output).split("\n")  # type: ignore
-
-    output.pop(-1)
-    output.pop(-1)
-    output.pop(0)
-
-    output.reverse()
-    blank_line = output[0]
-    output2 = output.copy()
-
-    for i in output:
-        if i == blank_line:
-            output2.pop(0)
-        else:
-            break
-
-    output2.reverse()
-
-    return len(output2)
-
 class Sidebar(Widget):
     """Sidebar widget to display list of questions."""
 
@@ -83,9 +54,9 @@ class Sidebar(Widget):
         self.so: StackOverflow = so
         super().__init__(name=name)
         self._text: Optional[Panel] = None
-        self.pages: list[Text] = None
+        self.pages: Optional[list[Text]] = None
         self.pages_index: dict[int, int] = {}
-    
+
     @staticmethod
     def check_overflow(contents: list[Text], console: Console, size: Size) -> bool:
         """Simulate end result, and check if the controls are visible"""
@@ -94,7 +65,7 @@ class Sidebar(Widget):
             page.append_text(i)
             page.append_text(Text("\n\n"))
         page.append_text(
-            Text.assemble(  # type: ignore
+            Text.assemble(
                 "\n<- Prev"
             )
         )
@@ -106,7 +77,7 @@ class Sidebar(Widget):
         )
 
         page.append_text(
-            Text.assemble(  # type: ignore
+            Text.assemble(
                 "Next ->"
             )
         )
@@ -115,9 +86,9 @@ class Sidebar(Widget):
 
         output = panel.__rich_console__(console, console.options.update_dimensions(size[0], size[1]))
         output = list(output)
-        output = [i.text for i in output]  # type: ignore
+        output = [i.text for i in output]
 
-        output = "".join(output)  # type: ignore
+        output = "".join(output)
 
         return "<- Prev Page 0/0 Next ->" not in output
 
@@ -128,8 +99,8 @@ class Sidebar(Widget):
 
         output = panel.__rich_console__(console, console.options.update_dimensions(size[0], size[1] + 50))
         output = list(output)
-        output = [i.text for i in output]  # type: ignore
-        output = "".join(output).split("\n")  # type: ignore
+        output = [i.text for i in output]
+        output = "".join(output).split("\n")
 
         output.pop(-1)
         output.pop(-1)
@@ -171,18 +142,18 @@ class Sidebar(Widget):
     async def on_leave(self, event: events.Leave) -> None:
         """Clear any highlight when the mouse leave the widget"""
         self.highlighted = None
-    
+
     async def on_resize(self, event: events.Resize) -> None:
         """Update the pages on resize"""
         self._text = None
-    
+
     def update_pages(self) -> None:
         """Update the pages and the pages index"""
         current_page = Text(end="")
-        current_page_container = []
-        current_page_contents = []
-        pages_index = {}
-        pages = []
+        current_page_container: list[int] = []
+        current_page_contents: list[Text] = []
+        pages_index: dict[int, int] = {}
+        pages: list[Text] = []
         on_next = None
         length = 0
 
@@ -197,13 +168,16 @@ class Sidebar(Widget):
             current_page.append_text(Text("\n\n"))
             current_page_container.append(i)
 
-            if len(current_page_contents) != 1 and self.check_overflow(current_page_contents, self.app.console, self.size):
+            overflow = len(current_page_contents) != 1 and \
+                self.check_overflow(current_page_contents, self.app.console, self.size)
+
+            if overflow:
                 page = Text(end="")
                 on_next = (current_page_contents.pop(), current_page_container.pop())
-                
+
                 for index, i in enumerate(current_page_contents):
                     index += length
-                    i.apply_meta({"@click": f"app.set_index({index})", "index": index})
+                    i.apply_meta({"@click": f"app.set_index({index})", "index": index})  # type: ignore
                     page.append_text(i)
                     page.append_text(Text("\n\n"))
                 length += len(current_page_contents)
@@ -221,7 +195,7 @@ class Sidebar(Widget):
             page = Text(end="")
             for index, i in enumerate(current_page_contents):
                 index += length
-                i.apply_meta({"@click": f"app.set_index({index})", "index": index})
+                i.apply_meta({"@click": f"app.set_index({index})", "index": index})  # type: ignore
                 page.append_text(i)
                 page.append_text(Text("\n\n"))
             for i in current_page_container:
@@ -236,11 +210,11 @@ class Sidebar(Widget):
         if self._text is None:
             self.update_pages()
             try:
-                page = self.pages[self.page]
+                page = self.pages[self.page]  # type: ignore
             except IndexError:
-                page = self.pages[len(self.pages) - 1]
-            
-            if len(self.pages) > 1:
+                page = self.pages[len(self.pages) - 1]  # type: ignore
+
+            if len(self.pages) > 1:  # type: ignore
                 height = self.get_height(page, self.app.console, self.size)
 
                 extra_lines = self.size.height - height - 4
@@ -254,16 +228,17 @@ class Sidebar(Widget):
 
                 page.append_text(
                     Text(
-                        " " * ((width - len(f"<- Prev Page {self.page}/{len(self.pages)} Next ->")) // 2)
+                        " " * (
+                            (width - len(f"<- Prev Page {self.page}/{len(self.pages)} Next ->")) // 2  # type: ignore
+                        )
                     )
                 )
 
                 page.append_text(
-                    Text.assemble(  # type: ignore
+                    Text.assemble(
                         (
                             "<- Prev",
-                            ("grey" if self.highlighted == -1 else "white") \
-                            if self.page > 0 else "#4f4f4f"
+                            ("grey" if self.highlighted == -1 else "white") if self.page > 0 else "#4f4f4f"
                         ),
                         meta={"@click": ("app.prev_page" if self.page > 0 else "app.bell"), "index": -1}
                     )
@@ -271,18 +246,23 @@ class Sidebar(Widget):
 
                 page.append_text(
                     Text.assemble(
-                        (f" Page {self.page + 1}/{len(self.pages)} ", "yellow")
+                        (f" Page {self.page + 1}/{len(self.pages)} ", "yellow")  # type: ignore
                     )
                 )
 
                 page.append_text(
-                    Text.assemble(  # type: ignore
+                    Text.assemble(
                         (
                             "Next ->",
-                            ("grey" if self.highlighted == -2 else "white") \
-                            if self.page + 1 < len(self.pages) else "#4f4f4f"
+                            ("grey" if self.highlighted == -2 else "white")
+                            if self.page + 1 < len(self.pages) else "#4f4f4f"  # type: ignore
                         ),
-                        meta={"@click": ("app.next_page" if self.page + 1 < len(self.pages) else "app.bell"), "index": -2}
+                        meta={
+                            "@click": (
+                                "app.next_page" if self.page + 1 < len(self.pages) else "app.bell"  # type: ignore
+                            ),
+                            "index": -2
+                        }
                     )
                 )
             self._text = Panel(page, title=self.so.sidebar_title)
@@ -332,7 +312,7 @@ class TextualDisplay(App):
     async def action_set_index(self, index: int) -> None:
         """Set question index"""
         self.sidebar.index = index
-        SO_RESULTS.index = self.index
+        SO_RESULTS.index = index
         self.index = index
 
         await self.update_body()
@@ -354,7 +334,7 @@ class TextualDisplay(App):
             await self.update_body()
             self.sidebar.index = self.index
             SO_RESULTS.index = self.index
-    
+
     async def action_next_page(self) -> None:
         """Set page"""
         self.sidebar.page += 1
@@ -362,7 +342,6 @@ class TextualDisplay(App):
     async def action_prev_page(self) -> None:
         """Set page"""
         self.sidebar.page -= 1
-
 
     async def action_open_browser(self) -> None:
         """Open the question in the browser."""
