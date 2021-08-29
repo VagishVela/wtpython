@@ -59,28 +59,23 @@ class Sidebar(Widget):
 
     @staticmethod
     def check_overflow(contents: list[Text], console: Console, size: Size) -> bool:
-        """Simulate end result, and check if the controls are visible"""
+        """
+        Check if the sidebar is overflowing or not.
+
+        It renders the sidebar, then checks if the controls are visible.
+        Used to generate pages.
+        Args:
+            contents: List of sidebar entries
+            console: App console
+            size: Console size
+        Returns:
+            Returns whether the sidebar is overflowing or not
+        """
         page = Text(end="")
-        for i in contents:
-            page.append_text(i)
+        for content in contents:
+            page.append_text(content)
             page.append_text(Text("\n\n"))
-        page.append_text(
-            Text.assemble(
-                "\n<- Prev"
-            )
-        )
-
-        page.append_text(
-            Text.assemble(
-                " Page 0/0 "
-            )
-        )
-
-        page.append_text(
-            Text.assemble(
-                "Next ->"
-            )
-        )
+        page.append_text(Text("<- Prev Page 0/0 Next ->"))
 
         panel = Panel(page, title="Questions")
 
@@ -94,7 +89,10 @@ class Sidebar(Widget):
 
     @staticmethod
     def get_height(text: Text, console: Console, size: Size) -> int:
-        """Get the height of a rendered text panel"""
+        """Get the height of the side panel with the sidebar entries.
+
+        Used for figuring out the location of the page controls
+        """
         panel = Panel(text)
 
         output = panel.__rich_console__(console, console.options.update_dimensions(size[0], size[1] + 50))
@@ -102,13 +100,11 @@ class Sidebar(Widget):
         output = [i.text for i in output]
         output = "".join(output).split("\n")
 
-        output.pop(-1)
-        output.pop(-1)
-        output.pop(0)
+        output = output[1:-2]
 
         output.reverse()
         blank_line = output[0]
-        output2 = output.copy()
+        output2 = output.copy()  # output2 is used because mutating output while in a loop has weird results
 
         for i in output:
             if i == blank_line:
@@ -144,11 +140,11 @@ class Sidebar(Widget):
         self.highlighted = None
 
     async def on_resize(self, event: events.Resize) -> None:
-        """Update the pages on resize"""
+        """Update the pages on resize."""
         self._text = None
 
     def update_pages(self) -> None:
-        """Update the pages and the pages index"""
+        """Update the pages and the pages index."""
         current_page = Text(end="")
         current_page_container: list[int] = []
         current_page_contents: list[Text] = []
@@ -336,11 +332,11 @@ class TextualDisplay(App):
             SO_RESULTS.index = self.index
 
     async def action_next_page(self) -> None:
-        """Set page"""
+        """Go to the next page."""
         self.sidebar.page += 1
 
     async def action_prev_page(self) -> None:
-        """Set page"""
+        """Go to the previous page."""
         self.sidebar.page -= 1
 
     async def action_open_browser(self) -> None:
@@ -376,18 +372,3 @@ class TextualDisplay(App):
         await view.dock(footer, edge="bottom")
         await view.dock(self.sidebar, edge="left", size=35)
         await view.dock(self.body, edge="right")
-
-
-if __name__ == "__main__":
-    try:
-        1 / 0
-    except ZeroDivisionError as e:
-        trace = Trace(e)
-    engine = SearchEngine(trace)
-    so = StackOverflow.from_trace(trace=trace, clear_cache=False)
-    store_results_in_module(
-        trace=trace,
-        so_results=so,
-        search_engine=engine,
-    )
-    TextualDisplay().run()
