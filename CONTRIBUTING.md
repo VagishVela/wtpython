@@ -10,35 +10,39 @@ Note: Due to a [limitation in textual](https://github.com/willmcgugan/textual/is
 
 2. Clone the repo and enter the `wtpython` folder.
 
-```
+```sh
 git clone https://github.com/<your-name>/wtpython.git
 cd wtpython
 ```
 
 3. Create and activate a virtual environment.
 
-```
+```sh
 python -m venv .venv --prompt template
 source .venv/bin/activate
 ```
 
-4. Upgrade pip and install [Flit](https://flit.readthedocs.io/en/latest/).
+4. Upgrade pip and install [Poetry](https://python-poetry.org/docs/#installation)
 
-```
-python -m pip install --upgrade pip flit
+```sh
+python -m pip install --upgrade pip
+# macOS / Linux / Bash
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+# Powershell
+(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
 ```
 
 5. Install the package in editable mode.
 
-```
-flit install -s
+```sh
+poetry install
 ```
 
 If you add dependencies to the project, you'll have to run this command again to install the new dependencies. Make sure to pin the version in `pyproject.toml`. This software is under a MIT license, so all dependencies must respect this. There is an automated test that will block contributions that violate MIT.
 
 6. Install [pre-commit](https://pre-commit.com/).
 
-```
+```sh
 pre-commit install
 ```
 
@@ -54,7 +58,7 @@ The `.pre-commit-config.yaml` file is configured to perform the following tasks 
 
 7. Create a new branch in your repo. Using a branch other than main will help you when syncing a fork later.
 
-```
+```sh
 git checkout -b <mybranch>
 ```
 
@@ -64,14 +68,14 @@ We're excited to see what you can do. 🤩
 
 9. Commit your changes.
 
-```
+```sh
 git add .
 git commit -m "<description of changes>"
 ```
 
 10. Push your changes up to your repository.
 
-```
+```sh
 git push --set-upstream origin <mybranch>
 ```
 
@@ -90,24 +94,24 @@ If you want to replace your main branch with the upstream one do the following:
 
 1. Fetch upstream.
 
-```
+```sh
 git fetch upstream
 ```
 
 2. Checkout the main branch.
 
-```
+```sh
 git checkout main
 ```
 
 3. Reset your main branch using upstream.
 
-```
+```sh
 git reset --hard upstream/main
 ```
 
 4. Force your main branch to your origin repo.
 
-```
+```sh
 git push origin master --force
 ```
