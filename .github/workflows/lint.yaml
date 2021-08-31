@@ -4,32 +4,50 @@ name: Lint, Build & Deploy
 
 # Trigger the workflow on both push (to the main repository)
 # and pull requests (against the main repository, but from any repo).
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '*.py'
+      - '.github/workflows/lint.yaml'
+  pull_request:
+    paths:
+      - '*.py'
+      - '.github/workflows/lint.yaml'
+
 # Brand new concurrency setting! This ensures that not more than one run can be triggered for the same commit.
 # It is useful for pull requests coming from the main repository since both triggers will match.
-concurrency: lint-${{ github.sha }}
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: [3.7, 3.8, 3.9]
+        os: [ubuntu-18.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     env:
       # Set an environment variable to select pip's cache directory for us to actually cache between runs.
       PIP_CACHE_DIR: /tmp/pip-cache-dir
-      # The Python version your project uses. Feel free to change this if required.
-      PYTHON_VERSION: 3.9
 
     steps:
       # Checks out the repository in the current folder.
-      - name: Checks out repository
-        uses: actions/checkout@v2
-
-      # Set up the right version of Python
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        id: python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ matrix.python_version }}
 
-      - name: Run pre-commit hooks.
-        uses: pre-commit/action@v2.0.3
+      - name: Install dependencies
+        run: |
+          pip install wheel flake8
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.0.0
+
+      - name: Install poetry dependencies
+        run: |
+          poetry install
+
+      - name: Run flake8
+        run: |
+          flake8 --format='::error file=%(path)s,line=%(row)d,col=%(col)d::[flake8] %(code)s: %(text)s'
