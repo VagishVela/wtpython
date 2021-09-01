@@ -30,6 +30,8 @@ python -m pip install --upgrade pip
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 # Powershell
 (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
+# Brew
+brew install poetry
 ```
 
 5. Install the package in editable mode.
