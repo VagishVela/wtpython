@@ -11,7 +11,7 @@ on:
       - .github/workflows/license-checker.yaml
   workflow_dispatch:
 
-concurrency: lint-${{ github.sha }}
+concurrency: liccheck-${{ github.sha }}
 
 jobs:
 
