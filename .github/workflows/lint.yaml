@@ -21,7 +21,7 @@ concurrency: lint-${{ github.sha }}
 jobs:
   lint:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         python_version: [3.7, 3.8, 3.9]
         os: [ubuntu-18.04, macos-latest, windows-latest]
