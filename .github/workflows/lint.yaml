@@ -24,8 +24,7 @@ jobs:
       fail-fast: true
       matrix:
         python_version: [3.7, 3.8, 3.9]
-        os: [ubuntu-18.04, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     env:
       # Set an environment variable to select pip's cache directory for us to actually cache between runs.
@@ -40,7 +39,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install wheel flake8
+          pip install wheel pre-commit
 
       - name: Install poetry
         uses: abatilo/actions-poetry@v2.0.0
@@ -49,6 +48,7 @@ jobs:
         run: |
           poetry install
 
-      - name: Run flake8
+      - name: Run pre-commit hooks
         run: |
-          flake8 --format='::error file=%(path)s,line=%(row)d,col=%(col)d::[flake8] %(code)s: %(text)s'
+          pre-commit run --all-files
+
