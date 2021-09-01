@@ -3,12 +3,12 @@ name: MIT license compatibility checker
 on:
   push:
     paths:
-      - pyproject.toml
-      - .github/workflows/license-checker.yaml
+      - 'pyproject.toml'
+      - '.github/workflows/license-checker.yaml'
   pull_request:
     paths:
-      - pyproject.toml
-      - .github/workflows/license-checker.yaml
+      - 'pyproject.toml'
+      - '.github/workflows/license-checker.yaml'
   workflow_dispatch:
 
 concurrency: liccheck-${{ github.sha }}

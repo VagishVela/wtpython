@@ -4,15 +4,7 @@ name: Lint, Build & Deploy
 
 # Trigger the workflow on both push (to the main repository)
 # and pull requests (against the main repository, but from any repo).
-on:
-  push:
-    paths:
-      - '*.py'
-      - '.github/workflows/lint.yaml'
-  pull_request:
-    paths:
-      - '*.py'
-      - '.github/workflows/lint.yaml'
+on: [push, pull_request]
 
 # Brand new concurrency setting! This ensures that not more than one run can be triggered for the same commit.
 # It is useful for pull requests coming from the main repository since both triggers will match.
