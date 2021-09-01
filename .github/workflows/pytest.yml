@@ -17,7 +17,7 @@ concurrency: test-${{ github.sha }}
 
 jobs:
 
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
