@@ -3,12 +3,21 @@
 
 name: pytest
 
-on: push
+on:
+  push:
+    paths:
+      - '*.py'
+      - '.github/workflows/pytest.yml'
+  pull_request:
+    paths:
+      - '*.py'
+      - '.github/workflows/pytest.yml'
 
-concurrency: lint-${{ github.sha }}
+concurrency: test-${{ github.sha }}
 
 jobs:
-  build:
+
+  test:
 
     runs-on: ubuntu-latest
 
@@ -17,24 +26,23 @@ jobs:
       PIP_CACHE_DIR: /tmp/pip-cache-dir
       # The Python version your project uses. Feel free to change this if required.
       PYTHON_VERSION: 3.9
-
     steps:
       # Checks out the repository in the current folder.
-      - name: Checks out repository
-        uses: actions/checkout@v2
-
-      # Set up the right version of Python
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        id: python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pytest flit
-          flit install
-      - name: Test with pytest
+          pip install pytest wheel
+          poetry install
+          poetry export --format requirements.txt --output requirements.txt
+          pip install -r requirements.txt
+
+      - name: Run pytest
         run: |
-          pytest
+          python -m pytest
