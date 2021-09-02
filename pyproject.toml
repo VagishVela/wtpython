@@ -24,7 +24,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"  # Poetry's dependency resolver requires me to put the <4.0 part for some reason
 parse = "1.19.0"
-requests = "2.25.1"
+requests = "2.26.0"
 textual = "0.1.9"
 toml = "0.10.2"
 rich = "10.7.0"
