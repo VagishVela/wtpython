@@ -22,14 +22,13 @@ python -m venv .venv --prompt template
 source .venv/bin/activate
 ```
 
-4. Upgrade pip and install [Poetry](https://python-poetry.org/docs/#installation)
-
+4. Upgrade pip and install [Poetry](https://python-poetry.org/docs/master/#installation). Please note that using an older version of Poetry or the old installer might not work as well.
 ```sh
 python -m pip install --upgrade pip
 # macOS / Linux / Bash
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 # Powershell
-(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
+(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python -
 # Brew
 brew install poetry
 ```
