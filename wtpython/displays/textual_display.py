@@ -73,9 +73,10 @@ class Sidebar(Widget):
             Returns whether the sidebar is overflowing or not
         """
         page = Text(end="")
-        for content in contents:
+        for i, content in enumerate(contents):
             page.append_text(content)
-            page.append_text(Text("\n\n"))
+            if i != len(contents) - 1:
+                page.append_text(Text("\n\n"))
         page.append_text(Text("3cksjusdkcjsady"))
         # Randomness that is almost guarenteed not to be included withing StackOverflow's results
         # If it is, that is really unfortunate.
