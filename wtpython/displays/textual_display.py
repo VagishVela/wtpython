@@ -63,7 +63,7 @@ class Sidebar(Widget):
         """
         Check if the sidebar is overflowing or not.
 
-        It renders the sidebar, then checks if the controls are visible.
+        It renders the sidebar, then checks if a test string is visible.
         Used to generate pages.
         Args:
             contents: List of sidebar entries
@@ -76,7 +76,9 @@ class Sidebar(Widget):
         for content in contents:
             page.append_text(content)
             page.append_text(Text("\n\n"))
-        page.append_text(Text("<- Prev Page 0/0 Next ->"))
+        page.append_text(Text("3cksjusdkcjsady"))
+        # Randomness that is almost guarenteed not to be included withing StackOverflow's results
+        # If it is, that is really unfortunate.
 
         panel = Panel(page, title="Questions")
 
@@ -86,7 +88,7 @@ class Sidebar(Widget):
 
         output = "".join(output)
 
-        return "<- Prev Page 0/0 Next ->" not in output
+        return "3cksjusdkcjsady" not in output
 
     @staticmethod
     def get_height(text: Text, console: Console, size: Size) -> int:
@@ -212,26 +214,8 @@ class Sidebar(Widget):
                 page = self.pages[len(self.pages) - 1]  # type: ignore
 
             if len(self.pages) > 1:  # type: ignore
-                height = self.get_height(page, self.app.console, self.size)
-
-                extra_lines = self.size.height - height - 4
-
-                page.append_text(
-                    Text(
-                        "\n" * extra_lines
-                    )
-                )
-                width = self.size.width - 2
-
-                page.append_text(
-                    Text(
-                        " " * (
-                            (width - len(f"<- Prev Page {self.page}/{len(self.pages)} Next ->")) // 2  # type: ignore
-                        )
-                    )
-                )
-
-                page.append_text(
+                controls = Text(end="")
+                controls.append_text(
                     Text.assemble(
                         (
                             "<- Prev",
@@ -241,13 +225,13 @@ class Sidebar(Widget):
                     )
                 )
 
-                page.append_text(
+                controls.append_text(
                     Text.assemble(
                         (f" Page {self.page + 1}/{len(self.pages)} ", "yellow")  # type: ignore
                     )
                 )
 
-                page.append_text(
+                controls.append_text(
                     Text.assemble(
                         (
                             "Next ->",
@@ -262,7 +246,10 @@ class Sidebar(Widget):
                         }
                     )
                 )
-            self._text = Panel(page, title=self.so.sidebar_title)
+
+                self._text = Panel(page, title=self.so.sidebar_title, subtitle=controls)
+            else:
+                self._text = Panel(page, title=self.so.sidebar_title)
 
         return self._text
 
