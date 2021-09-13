@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install wheel pre-commit
+          pip install wheel pre-commit pytest
 
       - name: Install poetry
         uses: abatilo/actions-poetry@v2.1.2
@@ -39,7 +39,13 @@ jobs:
       - name: Install poetry dependencies
         run: |
           poetry install
+          poetry export --format requirements.txt --output requirements.txt
+          pip install -r requirements.txt
 
       - name: Run pre-commit hooks
         run: |
           pre-commit run --all-files
+
+      - name: Run pytest
+        run: |
+          python -m pytest
