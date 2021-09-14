@@ -668,7 +668,7 @@ test = ["pytest (>=3.6)", "pytest-cov", "pytest-django", "zope.component", "sybi
 
 [[package]]
 name = "textual"
-version = "0.1.10"
+version = "0.1.11"
 description = "Text User Interface using Rich"
 category = "main"
 optional = false
@@ -764,8 +764,8 @@ test = []
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.7,<4.0"  # Poetry's dependency resolver requires me to put the <4.0 part for some reason
-content-hash = "956a85c968fcfa6183e9ec30a1b7652de1bf70bb58b3ea4210f756cfe354267d"
+python-versions = ">=3.7,<4.0"
+content-hash = "1b1b63432a53187d327ebbb3c382fc1da2c330d3665a4874d0b3b388f6278cbf"
 
 [metadata.files]
 appdirs = [
@@ -1075,8 +1075,8 @@ testfixtures = [
     {file = "testfixtures-6.18.1.tar.gz", hash = "sha256:0a6422737f6d89b45cdef1e2df5576f52ad0f507956002ce1020daa9f44211d6"},
 ]
 textual = [
-    {file = "textual-0.1.10-py3-none-any.whl", hash = "sha256:39c2f09ad9107b1aac26bc4cc8353f1331838770a22578c3360da41320f43926"},
-    {file = "textual-0.1.10.tar.gz", hash = "sha256:80ebb32f67489ab88c1eeabca23dc33beac3cef7e978a0acac4df34fdad047ba"},
+    {file = "textual-0.1.11-py3-none-any.whl", hash = "sha256:8fc16b751c722cd7a258a5173f08cd32253f4cf165a73e71ad109e0e03546ef3"},
+    {file = "textual-0.1.11.tar.gz", hash = "sha256:51cb6d6cfd1554a3c18f069fc3d63f98329bac39712de6193099a75f2b3ed03c"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
