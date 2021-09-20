@@ -594,7 +594,7 @@ docs = ["furo (>=2021.8.11-beta.42)", "linkify-it-py (>=1.0.1,<2.0.0)", "myst-pa
 
 [[package]]
 name = "rich"
-version = "10.9.0"
+version = "10.10.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
@@ -765,7 +765,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "1b1b63432a53187d327ebbb3c382fc1da2c330d3665a4874d0b3b388f6278cbf"
+content-hash = "ee0a13c21fd77392035fe9a083524d823e3d7274194abd5b77519364982817cc"
 
 [metadata.files]
 appdirs = [
@@ -1047,8 +1047,8 @@ requests-cache = [
     {file = "requests_cache-0.8.0-py3-none-any.whl", hash = "sha256:35d0f6a7d6f43932515200dff4a6bfbace0b2fedfe0d031069514cb77ec5d088"},
 ]
 rich = [
-    {file = "rich-10.9.0-py3-none-any.whl", hash = "sha256:2c84d9b3459c16bf413fe0f9644c7ae1791971e0bb944dfae56e7c7634b187ab"},
-    {file = "rich-10.9.0.tar.gz", hash = "sha256:ba285f1c519519490034284e6a9d2e6e3f16dc7690f2de3d9140737d81304d22"},
+    {file = "rich-10.10.0-py3-none-any.whl", hash = "sha256:0b8cbcb0b8d476a7f002feaed9f35e51615f673c6c291d76ddf0c555574fd3c7"},
+    {file = "rich-10.10.0.tar.gz", hash = "sha256:bacf58b25fea6b920446fe4e7abdc6c7664c4530c4098e7a1bc79b16b8551dfa"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
