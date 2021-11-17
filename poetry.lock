@@ -594,17 +594,17 @@ docs = ["furo (>=2021.8.11-beta.42)", "linkify-it-py (>=1.0.1,<2.0.0)", "myst-pa
 
 [[package]]
 name = "rich"
-version = "10.9.0"
+version = "10.14.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6.2,<4.0.0"
 
 [package.dependencies]
 colorama = ">=0.4.0,<0.5.0"
 commonmark = ">=0.9.0,<0.10.0"
 pygments = ">=2.6.0,<3.0.0"
-typing-extensions = {version = ">=3.7.4,<4.0.0", markers = "python_version < \"3.8\""}
+typing-extensions = {version = ">=3.7.4,<5.0", markers = "python_version < \"3.8\""}
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
@@ -765,7 +765,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "1b1b63432a53187d327ebbb3c382fc1da2c330d3665a4874d0b3b388f6278cbf"
+content-hash = "cf680da1303e45aa0b49a5c202c6e625f92ad0786450e18872eba6f31b7be50b"
 
 [metadata.files]
 appdirs = [
@@ -1047,8 +1047,8 @@ requests-cache = [
     {file = "requests_cache-0.8.0-py3-none-any.whl", hash = "sha256:35d0f6a7d6f43932515200dff4a6bfbace0b2fedfe0d031069514cb77ec5d088"},
 ]
 rich = [
-    {file = "rich-10.9.0-py3-none-any.whl", hash = "sha256:2c84d9b3459c16bf413fe0f9644c7ae1791971e0bb944dfae56e7c7634b187ab"},
-    {file = "rich-10.9.0.tar.gz", hash = "sha256:ba285f1c519519490034284e6a9d2e6e3f16dc7690f2de3d9140737d81304d22"},
+    {file = "rich-10.14.0-py3-none-any.whl", hash = "sha256:ab9cbfd7a3802d8c6f0fa91e974630e2a69447972dcbb9dfe9b01016dd95e38e"},
+    {file = "rich-10.14.0.tar.gz", hash = "sha256:8bfe4546d56b4131298d3a9e571a0742de342f1593770bd0d4707299f772a0af"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
