@@ -1,0 +1,26 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.205.1/containers/python-3
+{
+	"name": "WTPython",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".." // Set the workdir to be the parent directory of devcontainer.json
+	},
+	"settings": {
+		"python.defaultInterpreterPath": "/usr/local/bin/python",
+		"python.linting.enabled": true,
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-python.vscode-pylance",
+		"ms-python.python",
+		"github.vscode-pull-request-github",
+		"github.copilot",
+		"eamodio.gitlens"
+	],
+	// Features that vscode will install on build
+	"features": {
+		"git": "latest"
+	}
+}
