@@ -2,7 +2,7 @@
 name = "wtpython"
 version = "0.1.0"
 description = "A TUI that interactively helps you solve errors that might arise in your code."
-authors = ["Ethan Henry <ethanparkerhenry@gmail.com>"]
+authors = ["wtpython <wtpython@googlegroups.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://pypi.org/project/wtpython/"
