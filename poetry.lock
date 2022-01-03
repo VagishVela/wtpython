@@ -668,7 +668,7 @@ test = ["pytest (>=3.6)", "pytest-cov", "pytest-django", "zope.component", "sybi
 
 [[package]]
 name = "textual"
-version = "0.1.11"
+version = "0.1.13"
 description = "Text User Interface using Rich"
 category = "main"
 optional = false
@@ -765,7 +765,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "1b1b63432a53187d327ebbb3c382fc1da2c330d3665a4874d0b3b388f6278cbf"
+content-hash = "e6afc05a48e0b423bcaf0b6d78cbf11ba6dcf2faf7a8696c96ec2d3b9d8eab09"
 
 [metadata.files]
 appdirs = [
@@ -1075,8 +1075,8 @@ testfixtures = [
     {file = "testfixtures-6.18.1.tar.gz", hash = "sha256:0a6422737f6d89b45cdef1e2df5576f52ad0f507956002ce1020daa9f44211d6"},
 ]
 textual = [
-    {file = "textual-0.1.11-py3-none-any.whl", hash = "sha256:8fc16b751c722cd7a258a5173f08cd32253f4cf165a73e71ad109e0e03546ef3"},
-    {file = "textual-0.1.11.tar.gz", hash = "sha256:51cb6d6cfd1554a3c18f069fc3d63f98329bac39712de6193099a75f2b3ed03c"},
+    {file = "textual-0.1.13-py3-none-any.whl", hash = "sha256:3c65eb2edf67ea6258b36817c555f423a68f40165bfb9d1cccf614e75aaf927f"},
+    {file = "textual-0.1.13.tar.gz", hash = "sha256:5acb7d4d7e50dfb14d9c29a65ad1a158612f25c220187f2ba01c93398ddf5060"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
