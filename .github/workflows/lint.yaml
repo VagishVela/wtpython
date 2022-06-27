@@ -34,7 +34,7 @@ jobs:
           pip install wheel pre-commit
 
       - name: Install poetry
-        uses: abatilo/actions-poetry@v2.1.3
+        uses: abatilo/actions-poetry@v2.1.5
 
       - name: Install poetry dependencies
         run: |
