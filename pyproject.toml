@@ -29,7 +29,7 @@ textual = "0.1.11"
 toml = "0.10.2"
 rich = "10.9.0"
 pyperclip = "1.8.2"
-requests-cache = "0.8.0"
+requests-cache = "0.9.5"
 markdownify = "0.9.4"
 
 [tool.poetry.dev-dependencies]
@@ -109,5 +109,5 @@ unauthorized_licenses = [
 ]
 
 [tool.liccheck.authorized_packages]
-requests-cache = "0.8.0"
+requests-cache = "0.9.5"
 flake8-isort = "~=4.0"
