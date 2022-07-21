@@ -4,8 +4,6 @@ Contributions are welcome!
 
 For typos and minor corrections, please feel free to submit a PR. For technical changes, please speak with the core team first. We'd hate to turn down your awesome work.
 
-Note: Due to a [limitation in textual](https://github.com/willmcgugan/textual/issues/14), Windows is not supported, but fear not, this works in [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
-
 1. Fork the repository to get started.
 
 2. Clone the repo and enter the `wtpython` folder.
