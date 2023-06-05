@@ -30,7 +30,7 @@ toml = "0.10.2"
 rich = "10.9.0"
 pyperclip = "1.8.2"
 requests-cache = "0.8.0"
-markdownify = "0.9.4"
+markdownify = "0.11.6"
 
 [tool.poetry.dev-dependencies]
 flake8 = "~=3.7"
